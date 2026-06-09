@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 데일리 인사이트</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" rel="stylesheet" />
+  <style>
+    /* ── 기본 초기화 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nanum Square', sans-serif;
+      background: #f4f5f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ── API 키 오버레이 ── */
+    #api-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,25,50,0.82);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #api-overlay.hidden { display: none; }
+    .api-box {
+      background: #fff; border-radius: 16px;
+      padding: 32px 28px; max-width: 420px; width: 90%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+    .api-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .api-logo-badge { background: #185FA5; color: #fff; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 7px; }
+    .api-logo-title { font-size: 17px; font-weight: 800; color: #1a1a1a; }
+    .api-desc { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 18px; }
+    .api-desc a { color: #185FA5; }
+    .api-input-wrap { position: relative; margin-bottom: 10px; }
+    .api-input {
+      width: 100%; padding: 11px 40px 11px 14px;
+      border: 1.5px solid #d0d5dd; border-radius: 8px;
+      font-size: 13px; font-family: 'Nanum Square', sans-serif;
+      outline: none; transition: border-color 0.15s;
+    }
+    .api-input:focus { border-color: #185FA5; }
+    .api-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #888; font-size: 16px; padding: 0;
+    }
+    .api-remember { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 12px; color: #555; cursor: pointer; }
+    .api-remember input { cursor: pointer; }
+    .api-submit {
+      width: 100%; background: #185FA5; color: #fff;
+      border: none; border-radius: 8px; padding: 12px;
+      font-size: 14px; font-weight: 800; font-family: 'Nanum Square', sans-serif;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .api-submit:hover { background: #0C447C; }
+    .api-error { font-size: 12px; color: #A32D2D; margin-top: 8px; display: none; }
+    .api-error.show { display: block; }
+
+    /* ── 레이아웃 ── */
+    .wrap { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+
+    /* ── 상단 헤더 ── */
+    .top-bar {
+      background: #fff; border-radius: 12px 12px 0 0;
+      border-bottom: 1px solid #e8eaed;
+      padding: 16px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 10px; }
+    .logo-badge { background: #185FA5; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+    .top-title { font-size: 17px; font-weight: 800; color: #1a1a1a; }
+    .top-sub { font-size: 12px; color: #888; margin-top: 1px; }
+    .top-right { display: flex; align-items: center; gap: 8px; }
+    .date-badge {
+      font-size: 12px; color: #666;
+      background: #f4f5f7; border: 1px solid #e2e5ea;
+      padding: 5px 10px; border-radius: 6px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .api-reset-btn {
+      font-size: 11px; color: #888;
+      background: none; border: 1px solid #e2e5ea;
+      border-radius: 6px; padding: 5px 10px;
+      cursor: pointer; font-family: 'Nanum Square', sans-serif;
+    }
+    .api-reset-btn:hover { background: #f4f5f7; }
+
+    /* ── 탭 네비 ── */
+    .nav-tabs {
+      display: flex; background: #f8f9fb;
+      border-bottom: 1px solid #e8eaed;
+      padding: 0 22px; overflow-x: auto;
+    }
+    .nav-tab {
+      font-size: 13px; font-weight: 700; color: #888;
+      padding: 11px 16px; cursor: pointer;
+      border: none; border-bottom: 2px solid transparent;
+      background: none; white-space: nowrap;
+      font-family: 'Nanum Square', sans-serif;
+      transition: color 0.15s;
+    }
+    .nav-tab:hover { color: #1a1a1a; }
+    .nav-tab.active { color: #185FA5; border-bottom: 2px solid #185FA5; }
+    .fav-badge {
+      display: inline-block; background: #185FA5; color: #fff;
+      font-size: 10px; font-weight: 800;
+      padding: 1px 6px; border-radius: 10px; margin-left: 4px;
+      min-width: 18px; text-align: center;
+    }
+    .fav-badge.hidden { display: none; }
+
+    /* ── 메인 콘텐츠 ── */
+    .main-content {
+      background: #fff; border-radius: 0 0 12px 12px;
+      padding: 18px 22px;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── 배너들 ── */
+    .loading-banner {
+      background: #EBF4FF; border: 1px solid #B5D4F4;
+      border-radius: 8px; padding: 14px 16px;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .loading-banner.hidden { display: none; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid #B5D4F4; border-top-color: #185FA5;
+      border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 13px; color: #185FA5; font-weight: 700; }
+    .loading-step { font-size: 11px; color: #378ADD; margin-top: 2px; }
+
+    .error-banner {
+      background: #FEF2F2; border: 1px solid #FECACA;
+      border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;
+      display: none; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .error-banner.show { display: flex; }
+    .error-text { font-size: 12px; color: #B91C1C; font-weight: 700; }
+    .retry-btn {
+      font-size: 12px; font-weight: 700; color: #B91C1C;
+      background: none; border: 1px solid #FECACA;
+      border-radius: 6px; padding: 4px 10px;
+      cursor: pointer; font-family: 'Nanum Square', sans-serif;
+    }
+    .retry-btn:hover { background: #FEE2E2; }
+
+    /* ── 섹션 레이블 ── */
+    .section-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: #888;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #e8eaed; }
+    .section-block { margin-bottom: 22px; }
+
+    /* ── 통계 카드 ── */
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 14px; }
+    .stat-card { background: #f8f9fb; border-radius: 8px; padding: 12px 14px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 800; }
+    .stat-lbl { font-size: 11px; color: #888; margin-top: 2px; font-weight: 700; }
+
+    /* ── 뉴스 카드 그리드 ── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 10px; }
+
+    .news-card {
+      background: #fff; border: 1px solid #e8eaed;
+      border-radius: 10px; padding: 14px 16px;
+      position: relative; transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: default;
+    }
+    .news-card:hover { border-color: #b0bec5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .news-card.aicc { border-left: 3px solid #185FA5; }
+    .news-card.ai-news { border-left: 3px solid #1D9E75; }
+    .news-card.term-card { border-left: 3px solid #7F77DD; }
+
+    /* ── 별표 버튼 ── */
+    .star-btn {
+      position: absolute; top: 10px; right: 10px;
+      -webkit-appearance: none; appearance: none;
+      background: transparent !important;
+      border: none !important; outline: none !important;
+      box-shadow: none !important;
+      font-size: 17px; color: #ccc; cursor: pointer;
+      padding: 0; margin: 0; line-height: 1;
+      transition: color 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .star-btn:hover { color: #EF9F27; transform: scale(1.2); }
+    .star-btn.starred { color: #EF9F27; }
+    .star-btn:focus { outline: none !important; }
+
+    .card-tag-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; padding-right: 24px; }
+    .card-tag { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+    .tag-aicc { background: #EBF4FF; color: #185FA5; }
+    .tag-ai   { background: #E1F5EE; color: #0F6E56; }
+    .tag-term { background: #EEEDFE; color: #534AB7; }
+    .card-new-badge { font-size: 10px; font-weight: 800; background: #EBF4FF; color: #185FA5; padding: 2px 6px; border-radius: 3px; }
+    .card-hot-badge { font-size: 10px; font-weight: 800; background: #FEF3E2; color: #993C1D; padding: 2px 6px; border-radius: 3px; }
+
+    .card-title {
+      font-size: 13px; font-weight: 800; color: #1a1a1a;
+      line-height: 1.5; margin-bottom: 6px; padding-right: 22px;
+      cursor: pointer;
+    }
+    .card-title:hover { color: #185FA5; }
+    .card-desc { font-size: 12px; color: #666; line-height: 1.6; }
+    .card-meta { margin-top: 10px; font-size: 11px; color: #999; display: flex; align-items: center; justify-content: space-between; }
+
+    /* ── 용어 리스트 ── */
+    .terms-list { display: flex; flex-direction: column; gap: 8px; }
+    .term-item {
+      background: #fff; border: 1px solid #e8eaed;
+      border-radius: 8px; padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color 0.15s;
+    }
+    .term-item:hover { border-color: #b0bec5; }
+    .term-icon {
+      width: 32px; height: 32px; background: #EEEDFE; color: #534AB7;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .term-main { flex: 1; min-width: 0; cursor: pointer; }
+    .term-word { font-size: 13px; font-weight: 800; color: #1a1a1a; margin-bottom: 3px; }
+    .term-def { font-size: 12px; color: #666; line-height: 1.5; }
+    .term-star {
+      -webkit-appearance: none; appearance: none;
+      background: transparent !important; border: none !important;
+      outline: none !important; box-shadow: none !important;
+      font-size: 17px; color: #ccc; cursor: pointer; padding: 0;
+      flex-shrink: 0; transition: color 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .term-star:hover { color: #EF9F27; transform: scale(1.2); }
+    .term-star.starred { color: #EF9F27; }
+
+    /* ── 스켈레톤 ── */
+    .skeleton { background: #e8eaed; border-radius: 4px; animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .skel-card { background: #fff; border: 1px solid #e8eaed; border-radius: 10px; padding: 14px 16px; }
+    .skel-line { height: 12px; margin-bottom: 8px; border-radius: 4px; }
+
+    /* ── 더보기 버튼 ── */
+    .view-more-btn {
+      width: 100%; margin-top: 10px;
+      background: none; border: 1px solid #d0d5dd;
+      border-radius: 8px; color: #666;
+      font-size: 12px; font-weight: 700; padding: 9px;
+      cursor: pointer; font-family: 'Nanum Square', sans-serif;
+      transition: background 0.15s;
+    }
+    .view-more-btn:hover { background: #f4f5f7; }
+
+    /* ── 즐겨찾기 탭 ── */
+    .fav-empty { text-align: center; padding: 52px 20px; }
+    .fav-empty-icon { font-size: 38px; color: #EF9F27; margin-bottom: 12px; }
+    .fav-empty-title { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+    .fav-empty-desc { font-size: 13px; color: #888; line-height: 1.7; }
+    .fav-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .fav-count-lbl { font-size: 13px; font-weight: 800; color: #1a1a1a; }
+    .fav-clear-btn {
+      font-size: 12px; color: #888; background: none;
+      border: 1px solid #d0d5dd; border-radius: 6px; padding: 4px 10px;
+      cursor: pointer; font-family: 'Nanum Square', sans-serif;
+    }
+    .fav-clear-btn:hover { background: #f4f5f7; }
+    .fav-list { display: flex; flex-direction: column; gap: 8px; }
+    .fav-item {
+      background: #fff; border: 1px solid #e8eaed;
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .fav-item-body { flex: 1; min-width: 0; cursor: pointer; }
+    .fav-item-tag { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 7px; }
+    .fav-item-title { font-size: 13px; font-weight: 800; color: #1a1a1a; line-height: 1.5; margin-bottom: 5px; }
+    .fav-item-desc { font-size: 12px; color: #666; line-height: 1.5; }
+    .fav-item-meta { margin-top: 6px; font-size: 11px; color: #999; }
+    .fav-remove-btn {
+      -webkit-appearance: none; appearance: none;
+      background: transparent !important; border: none !important;
+      outline: none !important; box-shadow: none !important;
+      color: #EF9F27; font-size: 18px; cursor: pointer; padding: 0; flex-shrink: 0;
+      transition: transform 0.1s; -webkit-tap-highlight-color: transparent;
+    }
+    .fav-remove-btn:hover { transform: scale(1.2); }
+
+    /* ── 모달 ── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 14px;
+      border: 1px solid #e8eaed; padding: 22px;
+      max-width: 500px; width: 90%; max-height: 82vh;
+      overflow-y: auto; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      -webkit-appearance: none; appearance: none;
+      background: transparent !important; border: none !important;
+      outline: none !important; cursor: pointer;
+      color: #888; font-size: 20px; padding: 0;
+    }
+    .modal-tag-el { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+    .modal-title { font-size: 16px; font-weight: 800; color: #1a1a1a; margin-bottom: 10px; line-height: 1.5; }
+    .modal-body-text { font-size: 13px; color: #555; line-height: 1.85; }
+    .modal-source { margin-top: 14px; font-size: 11px; color: #999; }
+    .modal-ask-btn {
+      margin-top: 12px; width: 100%; background: none;
+      border: 1px solid #B5D4F4; color: #185FA5;
+      border-radius: 8px; padding: 10px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'Nanum Square', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      outline: none;
+    }
+    .modal-ask-btn:hover { background: #EBF4FF; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 560px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: repeat(2,1fr); }
+      .nav-tab { font-size: 12px; padding: 9px 10px; }
+      .top-title { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── API 키 입력 오버레이 ── -->
+<div id="api-overlay">
+  <div class="api-box">
+    <div class="api-logo">
+      <span class="api-logo-badge">AI</span>
+      <span class="api-logo-title">AI 데일리 인사이트</span>
+    </div>
+    <p class="api-desc">
+      실시간 뉴스 검색을 위해 <strong>Anthropic API 키</strong>가 필요합니다.<br>
+      키가 없다면 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>에서 무료로 발급받으세요.
+    </p>
+    <div class="api-input-wrap">
+      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-api..." />
+      <button class="api-toggle" id="api-toggle-vis" type="button">
+        <i class="ti ti-eye"></i>
+      </button>
+    </div>
+    <label class="api-remember">
+      <input type="checkbox" id="api-remember" checked />
+      이 브라우저에서 API 키 기억하기
+    </label>
+    <button class="api-submit" id="api-submit">대시보드 시작하기</button>
+    <div class="api-error" id="api-error">API 키를 입력해 주세요.</div>
+  </div>
+</div>
+
+<!-- ── 메인 래퍼 ── -->
+<div class="wrap">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="logo-badge">AI</span>
+      <div>
+        <div class="top-title">AI 데일리 인사이트</div>
+        <div class="top-sub">실시간 웹검색 기반 · 매일 자동 업데이트</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="date-badge">
+        <i class="ti ti-calendar" style="font-size:13px;"></i>
+        <span id="today-date"></span>
+      </div>
+      <button class="api-reset-btn" id="api-reset-btn" title="API 키 재설정">
+        <i class="ti ti-key" style="font-size:12px;"></i> API 키 변경
+      </button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="all">전체보기</button>
+    <button class="nav-tab" data-tab="aicc">📞 AICC 이슈</button>
+    <button class="nav-tab" data-tab="news">🤖 AI 뉴스</button>
+    <button class="nav-tab" data-tab="terms">📖 핵심 용어</button>
+    <button class="nav-tab" data-tab="favorites">★ 즐겨찾기<span class="fav-badge hidden" id="fav-badge">0</span></button>
+  </div>
+
+  <div class="main-content">
+
+    <!-- 로딩 배너 -->
+    <div class="loading-banner hidden" id="loading-banner">
+      <div class="spinner"></div>
+      <div>
+        <div class="loading-text">최신 정보를 검색하는 중입니다...</div>
+        <div class="loading-step" id="loading-step">잠시만 기다려 주세요</div>
+      </div>
+    </div>
+
+    <!-- 오류 배너 -->
+    <div class="error-banner" id="error-banner">
+      <span class="error-text" id="error-text">⚠ 정보를 불러오지 못했습니다.</span>
+      <button class="retry-btn" onclick="loadAllData()">다시 시도</button>
+    </div>
+
+    <!-- 전체보기 탭 -->
+    <div class="tab-panel active" id="tab-all">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-headset"></i> AICC 이슈 — 산업동향 · 정부지원</div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-num" style="color:#185FA5;" id="stat1">—</div><div class="stat-lbl">AICC 뉴스</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#1D9E75;" id="stat2">—</div><div class="stat-lbl">정부지원</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#7F77DD;" id="stat3">—</div><div class="stat-lbl">신기술·솔루션</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#D85A30;" id="stat4">—</div><div class="stat-lbl">규제·정책</div></div>
+        </div>
+        <div class="cards-grid" id="all-aicc-cards"></div>
+        <button class="view-more-btn" onclick="window.open('https://www.google.com/search?q=AICC+AI컨택센터+최신뉴스','_blank')">AICC 이슈 구글 검색 ↗</button>
+      </div>
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-robot"></i> AI 최신 뉴스</div>
+        <div class="cards-grid" id="all-news-cards"></div>
+        <button class="view-more-btn" onclick="window.open('https://www.google.com/search?q=AI+인공지능+최신뉴스','_blank')">AI 뉴스 구글 검색 ↗</button>
+      </div>
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-book"></i> AI 핵심 용어 — 오늘의 픽</div>
+        <div class="terms-list" id="all-terms-list"></div>
+        <button class="view-more-btn" onclick="loadMoreTerms()">용어 새로 불러오기 ↗</button>
+      </div>
+    </div>
+
+    <!-- AICC 탭 -->
+    <div class="tab-panel" id="tab-aicc">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-headset"></i> AICC 전체 이슈</div>
+        <div class="cards-grid" id="aicc-cards-full"></div>
+        <button class="view-more-btn" onclick="window.open('https://www.google.com/search?q=AICC+정부지원+공고','_blank')">정부지원 공고 검색 ↗</button>
+      </div>
+    </div>
+
+    <!-- AI 뉴스 탭 -->
+    <div class="tab-panel" id="tab-news">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-robot"></i> 오늘의 AI 뉴스</div>
+        <div class="cards-grid" id="news-cards-full"></div>
+        <button class="view-more-btn" onclick="window.open('https://www.google.com/search?q=AI+인공지능+오늘+뉴스','_blank')">오늘 AI 뉴스 검색 ↗</button>
+      </div>
+    </div>
+
+    <!-- 핵심 용어 탭 -->
+    <div class="tab-panel" id="tab-terms">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-book"></i> AI 핵심 용어 사전</div>
+        <div class="terms-list" id="terms-list-full"></div>
+        <button class="view-more-btn" onclick="loadMoreTerms()">용어 새로 불러오기 ↗</button>
+      </div>
+    </div>
+
+    <!-- 즐겨찾기 탭 -->
+    <div class="tab-panel" id="tab-favorites">
+      <div id="fav-empty" class="fav-empty">
+        <div class="fav-empty-icon">☆</div>
+        <div class="fav-empty-title">아직 즐겨찾기가 없습니다</div>
+        <div class="fav-empty-desc">각 카드 우측 상단의 ☆ 버튼을 눌러<br>중요한 기사와 용어를 모아보세요</div>
+      </div>
+      <div id="fav-content" style="display:none;">
+        <div class="fav-header">
+          <span class="fav-count-lbl" id="fav-count-lbl">저장된 항목 0개</span>
+          <button class="fav-clear-btn" onclick="clearAllFav()">전체 삭제</button>
+        </div>
+        <div class="fav-list" id="fav-list"></div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /wrap -->
+
+<!-- 모달 -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    <span class="modal-tag-el" id="m-tag"></span>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-body-text" id="m-body"></div>
+    <div class="modal-source" id="m-source"></div>
+    <button class="modal-ask-btn" id="m-ask-btn">
+      <i class="ti ti-external-link" style="font-size:15px;"></i>
+      구글에서 더 검색하기 ↗
+    </button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   유틸
+══════════════════════════════════════ */
+function esc(str) {
+  return (str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+/* ══════════════════════════════════════
+   날짜
+══════════════════════════════════════ */
+(function () {
+  const d = new Date(), days = ['일','월','화','수','목','금','토'];
+  document.getElementById('today-date').textContent =
+    d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' +
+    String(d.getDate()).padStart(2,'0') + ' (' + days[d.getDay()] + ')';
+})();
+
+/* ══════════════════════════════════════
+   API 키 관리
+══════════════════════════════════════ */
+let API_KEY = '';
+
+function loadSavedKey() {
+  const saved = localStorage.getItem('ai_dashboard_api_key');
+  if (saved) { API_KEY = saved; hideOverlay(); loadAllData(); }
+}
+
+function hideOverlay() {
+  document.getElementById('api-overlay').classList.add('hidden');
+}
+
+/* 키 표시/숨김 토글 */
+document.getElementById('api-toggle-vis').addEventListener('click', function () {
+  const inp = document.getElementById('api-key-input');
+  const icon = this.querySelector('i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'ti ti-eye-off'; }
+  else { inp.type = 'password'; icon.className = 'ti ti-eye'; }
+});
+
+/* 시작 버튼 */
+document.getElementById('api-submit').addEventListener('click', function () {
+  const key = document.getElementById('api-key-input').value.trim();
+  const errEl = document.getElementById('api-error');
+  if (!key) { errEl.textContent = 'API 키를 입력해 주세요.'; errEl.classList.add('show'); return; }
+  if (!key.startsWith('sk-')) { errEl.textContent = 'sk- 로 시작하는 올바른 API 키를 입력해 주세요.'; errEl.classList.add('show'); return; }
+  errEl.classList.remove('show');
+  API_KEY = key;
+  if (document.getElementById('api-remember').checked) {
+    localStorage.setItem('ai_dashboard_api_key', key);
+  }
+  hideOverlay();
+  loadAllData();
+});
+
+/* Enter 키 지원 */
+document.getElementById('api-key-input').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') document.getElementById('api-submit').click();
+});
+
+/* API 키 변경 버튼 */
+document.getElementById('api-reset-btn').addEventListener('click', function () {
+  localStorage.removeItem('ai_dashboard_api_key');
+  API_KEY = '';
+  document.getElementById('api-key-input').value = '';
+  document.getElementById('api-overlay').classList.remove('hidden');
+});
+
+/* ══════════════════════════════════════
+   탭 전환
+══════════════════════════════════════ */
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+  });
+});
+
+/* ══════════════════════════════════════
+   즐겨찾기
+══════════════════════════════════════ */
+let favorites = JSON.parse(localStorage.getItem('ai_dashboard_favorites') || '[]');
+
+function saveFavorites() { localStorage.setItem('ai_dashboard_favorites', JSON.stringify(favorites)); }
+
+function updateFavBadge() {
+  const b = document.getElementById('fav-badge');
+  b.textContent = favorites.length;
+  b.classList.toggle('hidden', favorites.length === 0);
+}
+
+function renderFavTab() {
+  const empty = document.getElementById('fav-empty');
+  const content = document.getElementById('fav-content');
+  const list = document.getElementById('fav-list');
+  document.getElementById('fav-count-lbl').textContent = '저장된 항목 ' + favorites.length + '개';
+  if (favorites.length === 0) { empty.style.display = 'block'; content.style.display = 'none'; return; }
+  empty.style.display = 'none'; content.style.display = 'block';
+  const tagCls = { aicc: 'tag-aicc', ai: 'tag-ai', term: 'tag-term' };
+  list.innerHTML = favorites.map((f, i) => `
+    <div class="fav-item">
+      <div class="fav-item-body" onclick="openModal('${esc(f.type)}','${esc(f.title)}','${esc(f.tag)}','${esc(f.body)}','${esc(f.tag)}','${esc(f.source)}')">
+        <span class="fav-item-tag ${tagCls[f.type] || 'tag-ai'}">${f.tag}</span>
+        <div class="fav-item-title">${f.title}</div>
+        <div class="fav-item-desc">${f.desc}</div>
+        <div class="fav-item-meta">${f.source}</div>
+      </div>
+      <button class="fav-remove-btn" onclick="removeFav(${i})">★</button>
+    </div>`).join('');
+}
+
+function toggleFav(btn, type, title, desc, body, source, tag) {
+  const idx = favorites.findIndex(f => f.title === title);
+  if (idx === -1) {
+    favorites.push({ type, title, desc, body, source, tag });
+    btn.textContent = '★'; btn.classList.add('starred');
+  } else {
+    favorites.splice(idx, 1);
+    btn.textContent = '☆'; btn.classList.remove('starred');
+  }
+  saveFavorites(); updateFavBadge(); renderFavTab();
+}
+
+function removeFav(idx) {
+  const removed = favorites[idx]; favorites.splice(idx, 1);
+  document.querySelectorAll('.star-btn.starred, .term-star.starred').forEach(btn => {
+    if ((btn.dataset.title || '') === removed.title) { btn.textContent = '☆'; btn.classList.remove('starred'); }
+  });
+  saveFavorites(); updateFavBadge(); renderFavTab();
+}
+
+function clearAllFav() {
+  favorites = [];
+  document.querySelectorAll('.star-btn.starred, .term-star.starred').forEach(btn => {
+    btn.textContent = '☆'; btn.classList.remove('starred');
+  });
+  saveFavorites(); updateFavBadge(); renderFavTab();
+}
+
+/* ══════════════════════════════════════
+   모달
+══════════════════════════════════════ */
+function openModal(type, title, subtitle, body, tag, source) {
+  const tagCls = { aicc: 'tag-aicc', ai: 'tag-ai', term: 'tag-term' };
+  const tagEl = document.getElementById('m-tag');
+  tagEl.className = 'modal-tag-el ' + (tagCls[type] || 'tag-ai');
+  tagEl.textContent = tag || subtitle;
+  document.getElementById('m-title').textContent = title;
+  document.getElementById('m-body').textContent = body;
+  document.getElementById('m-source').innerHTML = '<i class="ti ti-news" style="font-size:13px;"></i> 출처: ' + (source || '');
+  document.getElementById('m-ask-btn').onclick = () => {
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(title), '_blank');
+  };
+  document.getElementById('modal-bg').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
+
+/* ══════════════════════════════════════
+   카드 HTML 생성
+══════════════════════════════════════ */
+function makeCard(item, type) {
+  const tagCls = { aicc: 'tag-aicc', ai: 'tag-ai', term: 'tag-term' };
+  const borderCls = { aicc: 'aicc', ai: 'ai-news', term: 'term-card' };
+  const isFav = favorites.some(f => f.title === item.title);
+  const t = esc(item.title), d = esc(item.desc || ''), b = esc(item.body || item.desc || ''), src = esc(item.source || ''), tg = esc(item.tag || '');
+  return `<div class="news-card ${borderCls[type] || ''}">
+    <button class="star-btn ${isFav ? 'starred' : ''}" data-title="${t}" aria-label="즐겨찾기"
+      onclick="toggleFav(this,'${type}','${t}','${d}','${b}','${src}','${tg}')">${isFav ? '★' : '☆'}</button>
+    <div class="card-tag-row">
+      <span class="card-tag ${tagCls[type] || 'tag-ai'}">${item.tag || ''}</span>
+      ${item.isNew ? '<span class="card-new-badge">NEW</span>' : ''}
+      ${item.isHot ? '<span class="card-hot-badge">HOT</span>' : ''}
+    </div>
+    <div class="card-title" onclick="openModal('${type}','${t}','${tg}','${b}','${tg}','${src}')">${item.title}</div>
+    <div class="card-desc">${item.desc || ''}</div>
+    <div class="card-meta"><span>${item.source || ''}</span><i class="ti ti-chevron-right" style="font-size:13px;"></i></div>
+  </div>`;
+}
+
+function makeTermItem(item) {
+  const icons = { 'RAG': 'ti-search', 'LLM': 'ti-brain', 'STT': 'ti-microphone', 'TTS': 'ti-microphone', '프롬프트': 'ti-code', '파인튜닝': 'ti-adjustments', '에이전트': 'ti-robot', '임베딩': 'ti-vector', '할루시네이션': 'ti-alert-circle', '토큰': 'ti-key', '멀티모달': 'ti-photo', '추론': 'ti-bulb' };
+  let ic = 'ti-book';
+  for (const k in icons) { if ((item.word || '').includes(k)) { ic = icons[k]; break; } }
+  const isFav = favorites.some(f => f.title === item.word);
+  const w = esc(item.word), d = esc(item.def), b = esc(item.body || item.def);
+  return `<div class="term-item">
+    <div class="term-icon"><i class="ti ${ic}"></i></div>
+    <div class="term-main" onclick="openModal('term','${w}','핵심 용어','${b}','핵심 용어','AI 핵심 용어집')">
+      <div class="term-word">${item.word}</div>
+      <div class="term-def">${item.def}</div>
+    </div>
+    <button class="term-star ${isFav ? 'starred' : ''}" data-title="${w}" aria-label="즐겨찾기"
+      onclick="toggleFav(this,'term','${w}','${d}','${b}','AI 핵심 용어집','핵심 용어')">${isFav ? '★' : '☆'}</button>
+  </div>`;
+}
+
+/* 스켈레톤 */
+function showSkeleton(id) {
+  document.getElementById(id).innerHTML = '<div class="skel-card"><div class="skeleton skel-line" style="width:40%;"></div><div class="skeleton skel-line" style="width:90%;"></div><div class="skeleton skel-line" style="width:60%;"></div></div>'.repeat(3);
+}
+
+/* 렌더링 */
+function renderSection(id, items, type) {
+  const el = document.getElementById(id);
+  if (!items || !items.length) { el.innerHTML = '<p style="font-size:13px;color:#888;padding:10px 0;">검색된 내용이 없습니다.</p>'; return; }
+  el.innerHTML = items.map(i => makeCard(i, type)).join('');
+}
+function renderTerms(id, items) {
+  const el = document.getElementById(id);
+  if (!items || !items.length) { el.innerHTML = '<p style="font-size:13px;color:#888;padding:10px 0;">검색된 내용이 없습니다.</p>'; return; }
+  el.innerHTML = items.map(i => makeTermItem(i)).join('');
+}
+
+/* ══════════════════════════════════════
+   API 호출
+══════════════════════════════════════ */
+async function callAPI(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (res.status === 401) throw new Error('AUTH');
+  if (!res.ok) throw new Error('API ' + res.status);
+  const data = await res.json();
+  return data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+}
+
+function extractJSON(raw) {
+  const clean = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  const s = clean.indexOf('['), end = clean.lastIndexOf(']');
+  if (s === -1 || end === -1) return null;
+  try { return JSON.parse(clean.slice(s, end + 1)); } catch (e) { return null; }
+}
+
+/* ══════════════════════════════════════
+   폴백 데이터
+══════════════════════════════════════ */
+function getFallbackAicc() {
+  return [
+    { title: 'AICC 도입 기업 전년 대비 38% 증가', desc: '금융·통신·유통 업종 중심 전환 가속화', body: '금융·통신·유통 업종을 중심으로 AICC 도입이 확산되고 있습니다. STT, 감성분석, 실시간 어시스트 기술이 주로 활용됩니다.', tag: '산업동향', source: '산업일보', isNew: true, isHot: false },
+    { title: '과기부 AICC 전문인력 양성사업 공모', desc: '총 50억 규모 · 컨소시엄 형태 지원', body: '과학기술정보통신부가 AI 컨택센터 전문인력 양성 지원사업을 공모합니다. 총 50억 원 규모로 컨소시엄 형태 지원이 가능합니다.', tag: '정부지원', source: '과기부', isNew: false, isHot: true },
+    { title: '감성 AI로 상담사 번아웃 사전 감지', desc: '음성·대화 패턴 분석 솔루션 파일럿 확산', body: '상담사 감정 상태를 실시간 분석해 번아웃을 사전에 감지하는 AI 솔루션이 주목받고 있습니다.', tag: '신기술', source: '전자신문', isNew: false, isHot: false }
+  ];
+}
+function getFallbackNews() {
+  return [
+    { title: 'AI 에이전트 시대 본격 개막', desc: '단순 챗봇에서 자율 업무 수행 AI로 진화', body: '2025년은 AI 에이전트가 실제 업무 환경에 본격 투입되는 원년으로 평가받고 있습니다.', tag: '글로벌', source: 'MIT Technology Review', isNew: true, isHot: false },
+    { title: '국내 AI 스타트업 투자 전년比 2배 증가', desc: '생성형 AI 응용 분야 집중 투자 이어져', body: '2025년 국내 AI 스타트업 투자 규모가 전년 대비 약 2배 증가했습니다.', tag: '국내', source: '한국벤처캐피탈협회', isNew: false, isHot: true },
+    { title: 'EU AI Act 본격 시행', desc: '고위험 AI 투명성·감독 요건 의무화', body: 'EU AI 규제법이 본격 시행에 들어갔습니다. 위반 시 매출 최대 6%가 과징금으로 부과됩니다.', tag: '정책', source: '한국경제', isNew: false, isHot: true }
+  ];
+}
+function getFallbackTerms() {
+  return [
+    { word: 'RAG — 검색증강생성', def: '외부 데이터 실시간 검색 후 답변 생성', body: 'RAG(Retrieval-Augmented Generation)는 LLM이 외부 지식 베이스를 실시간으로 검색하여 답변을 생성하는 기술입니다. AICC FAQ 자동응답에 활용됩니다.' },
+    { word: 'LLM — 대형 언어 모델', def: 'GPT·Claude 등 초거대 AI의 기반 모델', body: 'LLM(Large Language Model)은 수백억 개 이상의 파라미터로 학습된 언어 모델입니다. AICC의 핵심 엔진입니다.' },
+    { word: 'STT / TTS — 음성인식·합성', def: '말↔텍스트 양방향 변환 기술', body: 'STT는 고객 발화를 텍스트로, TTS는 텍스트를 음성으로 변환합니다. AICC 자동응답의 기반 기술입니다.' },
+    { word: '프롬프트 엔지니어링', def: 'AI 최적 답변 유도 입력 설계 기술', body: 'AI 모델에게 원하는 결과를 얻기 위해 입력 문장을 체계적으로 설계하는 기술입니다. AICC 상담 품질 향상에 활용됩니다.' }
+  ];
+}
+
+/* ══════════════════════════════════════
+   데이터 로드
+══════════════════════════════════════ */
+let loadedData = { aicc: [], news: [], terms: [] };
+
+async function loadAllData() {
+  const lb = document.getElementById('loading-banner');
+  const eb = document.getElementById('error-banner');
+  const step = document.getElementById('loading-step');
+  lb.classList.remove('hidden'); eb.classList.remove('show');
+  ['all-aicc-cards', 'all-news-cards', 'aicc-cards-full', 'news-cards-full'].forEach(showSkeleton);
+  const today = new Date();
+  const dateStr = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일';
+  try {
+    step.textContent = 'AICC 이슈 검색 중...';
+    const aiccRaw = await callAPI(`오늘(${dateStr}) 기준 한국 AICC(AI 컨택센터·콜센터) 관련 최신 뉴스 3건을 웹에서 검색하여 아래 JSON 배열만 반환하세요. 설명 없이 JSON만 출력.\n[{"title":"기사 제목","desc":"한 줄 요약(40자 이내)","body":"3~4문장 상세 설명","tag":"산업동향|정부지원|신기술|솔루션|규제 중 하나","source":"출처명 · 날짜","isNew":true,"isHot":false}]`);
+    loadedData.aicc = extractJSON(aiccRaw) || getFallbackAicc();
+
+    step.textContent = 'AI 최신 뉴스 검색 중...';
+    const newsRaw = await callAPI(`오늘(${dateStr}) 기준 AI 관련 최신 국내외 뉴스 3건을 웹에서 검색하여 아래 JSON 배열만 반환하세요. 설명 없이 JSON만 출력.\n[{"title":"기사 제목","desc":"한 줄 요약(40자 이내)","body":"3~4문장 상세 설명","tag":"글로벌|국내|정책|연구|산업 중 하나","source":"출처명 · 날짜","isNew":true,"isHot":false}]`);
+    loadedData.news = extractJSON(newsRaw) || getFallbackNews();
+
+    step.textContent = 'AI 핵심 용어 정리 중...';
+    const termsRaw = await callAPI(`AICC·콜센터 담당자가 알아야 할 오늘의 AI 핵심 용어 4개를 아래 JSON 배열만 반환하세요. 설명 없이 JSON만 출력.\n[{"word":"용어명 (영문약어)","def":"15자 이내 한 줄 설명","body":"3~4문장 쉬운 설명. AICC 활용 예시 포함"}]`);
+    loadedData.terms = extractJSON(termsRaw) || getFallbackTerms();
+
+    document.getElementById('stat1').textContent = loadedData.aicc.length + '+';
+    document.getElementById('stat2').textContent = loadedData.aicc.filter(i => i.tag === '정부지원').length || '—';
+    document.getElementById('stat3').textContent = loadedData.aicc.filter(i => i.tag === '솔루션' || i.tag === '신기술').length || '—';
+    document.getElementById('stat4').textContent = loadedData.aicc.filter(i => i.tag === '규제').length || '—';
+
+    renderSection('all-aicc-cards', loadedData.aicc, 'aicc');
+    renderSection('all-news-cards', loadedData.news, 'ai');
+    renderSection('aicc-cards-full', loadedData.aicc, 'aicc');
+    renderSection('news-cards-full', loadedData.news, 'ai');
+    renderTerms('all-terms-list', loadedData.terms);
+    renderTerms('terms-list-full', loadedData.terms);
+    lb.classList.add('hidden');
+
+  } catch (err) {
+    lb.classList.add('hidden');
+    if (err.message === 'AUTH') {
+      document.getElementById('error-text').textContent = '⚠ API 키가 올바르지 않습니다. 키를 다시 확인해 주세요.';
+      localStorage.removeItem('ai_dashboard_api_key');
+    }
+    eb.classList.add('show');
+    loadedData = { aicc: getFallbackAicc(), news: getFallbackNews(), terms: getFallbackTerms() };
+    renderSection('all-aicc-cards', loadedData.aicc, 'aicc');
+    renderSection('all-news-cards', loadedData.news, 'ai');
+    renderSection('aicc-cards-full', loadedData.aicc, 'aicc');
+    renderSection('news-cards-full', loadedData.news, 'ai');
+    renderTerms('all-terms-list', loadedData.terms);
+    renderTerms('terms-list-full', loadedData.terms);
+  }
+}
+
+async function loadMoreTerms() {
+  const today = new Date();
+  const dateStr = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일';
+  try {
+    const raw = await callAPI(`AICC·콜센터 담당자가 알아야 할 AI 핵심 용어 4개(이전과 다른 것)를 아래 JSON 배열만 반환하세요. 설명 없이 JSON만 출력.\n[{"word":"용어명 (영문약어)","def":"15자 이내 한 줄 설명","body":"3~4문장 쉬운 설명. AICC 활용 예시 포함"}]`);
+    const terms = extractJSON(raw) || getFallbackTerms();
+    renderTerms('all-terms-list', terms);
+    renderTerms('terms-list-full', terms);
+  } catch (e) { alert('용어를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
+}
+
+/* ══════════════════════════════════════
+   초기 실행
+══════════════════════════════════════ */
+updateFavBadge();
+renderFavTab();
+loadSavedKey(); // 저장된 키 있으면 바로 로드, 없으면 오버레이 유지
+</script>
+</body>
+</html>
