@@ -1,502 +1,734 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 데일리 인사이트</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Nanum Square', sans-serif; background: #f4f5f7; color: #1a1a1a; min-height: 100vh; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 데일리 인사이트</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111111;
+  --ink-mid: #333333;
+  --ink-light: #666666;
+  --ink-faint: #999999;
+  --paper: #ffffff;
+  --paper-mid: #f8f8f8;
+  --paper-dark: #f0f0f0;
+  --rule: #dddddd;
+  --rule-light: #eeeeee;
+  --accent: #1a1a2e;
+  --accent-mid: #16213e;
+  --accent-light: #0f3460;
+  --point: #0ea5e9;
+  --point-light: #e0f4ff;
+  --blue: #185FA5;
+  --blue-light: #EBF4FF;
+  --green: #1D9E75;
+  --green-light: #E1F5EE;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Nanum Square', sans-serif; background: var(--paper-mid); color: var(--ink); min-height: 100vh; }
 
-    .top-bar { background: #fff; border-radius: 12px 12px 0 0; border-bottom: 1px solid #e8eaed; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; }
-    .top-bar-left { display: flex; align-items: center; gap: 10px; }
-    .logo-badge { background: #185FA5; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
-    .top-title { font-size: 17px; font-weight: 800; color: #1a1a1a; }
-    .top-sub { font-size: 12px; color: #888; margin-top: 1px; }
-    .top-right { display: flex; align-items: center; gap: 8px; }
-    .date-badge { font-size: 12px; color: #666; background: #f4f5f7; border: 1px solid #e2e5ea; padding: 5px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; }
-    .refresh-btn { font-size: 12px; font-weight: 700; color: #185FA5; background: none; border: 1px solid #B5D4F4; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; display: flex; align-items: center; gap: 4px; }
-    .refresh-btn:hover { background: #EBF4FF; }
+/* ── MASTHEAD ── */
+.masthead { background: var(--accent); border-bottom: 3px solid var(--point); }
+.masthead-top { background: var(--accent-mid); display: flex; justify-content: space-between; align-items: center; padding: 6px 2rem; font-size: 11px; color: #aaa; letter-spacing: 0.04em; }
+.masthead-top .date-info { display: flex; gap: 16px; }
+.masthead-main { text-align: center; padding: 1.4rem 2rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.masthead-main::before, .masthead-main::after { content: ''; display: block; height: 1px; background: rgba(255,255,255,0.15); margin: 0 2rem; }
+.logo { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 900; color: #fff; letter-spacing: -0.02em; line-height: 1; margin: 0.5rem 0; }
+.logo span { color: #ffffff; }
+.tagline { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #aaa; margin-top: 6px; }
+.nav-bar { display: flex; justify-content: center; background: var(--accent-light); border-top: 1px solid rgba(255,255,255,0.08); }
+.nav-bar a { color: #ccc; text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 9px 20px; border-right: 1px solid rgba(255,255,255,0.08); transition: all 0.2s; cursor: pointer; }
+.nav-bar a:hover, .nav-bar a.active { background: var(--point); color: #fff; }
 
-    .nav-tabs { display: flex; background: #f8f9fb; border-bottom: 1px solid #e8eaed; padding: 0 22px; overflow-x: auto; }
-    .nav-tab { font-size: 13px; font-weight: 700; color: #888; padding: 11px 16px; cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; font-family: 'Nanum Square', sans-serif; transition: color 0.15s; }
-    .nav-tab:hover { color: #1a1a1a; }
-    .nav-tab.active { color: #185FA5; border-bottom: 2px solid #185FA5; }
-    .fav-badge { display: inline-block; background: #185FA5; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 10px; margin-left: 4px; min-width: 18px; text-align: center; }
-    .fav-badge.hidden { display: none; }
+/* ── TICKER ── */
+.ticker-wrap { background: var(--point); padding: 7px 0; overflow: hidden; display: flex; align-items: center; }
+.ticker-label { background: #fff; color: var(--point); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; padding: 2px 14px; flex-shrink: 0; margin-right: 16px; }
+.ticker-track { display: flex; gap: 48px; white-space: nowrap; animation: ticker 40s linear infinite; }
+.ticker-track span { font-size: 12px; color: #fff; flex-shrink: 0; }
+.ticker-track span::before { content: '◆ '; font-size: 8px; opacity: 0.7; }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    .main-content { background: #fff; border-radius: 0 0 12px 12px; padding: 18px 22px; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+/* ── EDITION BAR ── */
+.edition-bar { background: var(--paper-dark); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 6px 2rem; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ink-light); }
+.update-btn { background: var(--accent); color: #fff; border: none; font-size: 11px; font-weight: 700; padding: 4px 14px; letter-spacing: 0.06em; cursor: pointer; font-family: 'Nanum Square', sans-serif; transition: background 0.2s; }
+.update-btn:hover { background: var(--point); }
 
-    .loading-banner { background: #EBF4FF; border: 1px solid #B5D4F4; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
-    .loading-banner.hidden { display: none; }
-    .spinner { width: 18px; height: 18px; border: 2px solid #B5D4F4; border-top-color: #185FA5; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 13px; color: #185FA5; font-weight: 700; }
+/* ── LAYOUT ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 0; padding: 1.5rem 0; }
+.col-main { border-right: 1px solid var(--rule); padding-right: 1.5rem; }
+.col-side { padding-left: 1.5rem; }
 
-    .error-banner { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between; gap: 10px; }
-    .error-banner.show { display: flex; }
-    .error-text { font-size: 12px; color: #B91C1C; font-weight: 700; }
-    .retry-btn { font-size: 12px; font-weight: 700; color: #B91C1C; background: none; border: 1px solid #FECACA; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; }
+/* ── SECTION HEADERS ── */
+.section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 6px; border-bottom: 2px solid var(--ink); }
+.section-badge { background: var(--point); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 8px; letter-spacing: 0.1em; }
+.section-badge.blue { background: var(--blue); }
+.section-badge.green { background: var(--green); }
+.section-badge.dark { background: var(--accent); }
+.section-head h2 { font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
 
-    .section-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: #e8eaed; }
-    .section-block { margin-bottom: 24px; }
+/* ── AICC GRID ── */
+.aicc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.8rem; }
+.aicc-card { background: var(--paper); border: 1px solid var(--rule); border-top: 3px solid var(--point); padding: 14px 16px; cursor: pointer; transition: all 0.2s; position: relative; }
+.aicc-card:hover { border-top-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.aicc-card .star-btn { position: absolute; top: 8px; right: 10px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 15px; color: #ddd; cursor: pointer; padding: 0; line-height: 1; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
+.aicc-card .star-btn:hover { color: #f0a500; }
+.aicc-card .star-btn.starred { color: #f0a500; }
+.aicc-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--point); margin-bottom: 6px; text-transform: uppercase; }
+.aicc-title { font-size: 14px; font-weight: 800; line-height: 1.4; margin-bottom: 8px; padding-right: 20px; }
+.aicc-excerpt { font-size: 12px; color: var(--ink-light); line-height: 1.65; }
 
-    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 16px; }
-    .stat-card { background: #f8f9fb; border-radius: 8px; padding: 12px 14px; text-align: center; }
-    .stat-num { font-size: 22px; font-weight: 800; }
-    .stat-lbl { font-size: 11px; color: #888; margin-top: 2px; font-weight: 700; }
+/* ── HERO STORY ── */
+.hero-story { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--rule); }
+.hero-article { grid-column: 1 / -1; }
+.hero-article.half { grid-column: auto; }
+.article-category { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.article-headline { font-weight: 800; line-height: 1.3; margin-bottom: 8px; cursor: pointer; transition: color 0.2s; }
+.article-headline:hover { color: var(--point); }
+.hero-article .article-headline { font-size: 1.45rem; }
+.hero-article.half .article-headline { font-size: 1.05rem; }
+.article-deck { font-size: 13px; line-height: 1.7; color: var(--ink-light); margin-bottom: 8px; }
+.article-byline { font-size: 11px; color: var(--ink-faint); letter-spacing: 0.03em; }
+.article-img { width: 100%; height: 160px; background: var(--paper-dark); border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; position: relative; }
+.img-label { font-size: 11px; text-align: center; padding: 1rem; color: var(--ink-light); position: relative; z-index: 1; }
+.img-bg { position: absolute; inset: 0; opacity: 0.06; font-size: 5rem; display: flex; align-items: center; justify-content: center; }
 
-    /* 링크 카드 그리드 */
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+/* ── 3-COL NEWS GRID ── */
+.news-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--rule); }
+.news-card { border-left: 2px solid var(--rule); padding-left: 12px; cursor: pointer; }
+.news-card:hover .article-headline { color: var(--point); }
+.news-card .article-headline { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+.news-card .article-deck { font-size: 12px; }
 
-    .link-card { background: #fff; border: 1px solid #e8eaed; border-radius: 12px; padding: 18px 16px; position: relative; transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s; text-decoration: none; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
-    .link-card:hover { border-color: #185FA5; box-shadow: 0 4px 16px rgba(24,95,165,0.10); transform: translateY(-2px); }
-    .link-card.cat-aicc { border-left: 3px solid #185FA5; }
-    .link-card.cat-ai { border-left: 3px solid #1D9E75; }
-    .link-card.cat-gov { border-left: 3px solid #D85A30; }
-    .link-card.cat-other { border-left: 3px solid #7F77DD; }
+/* ── SIDEBAR ── */
+.sidebar-section { margin-bottom: 1.5rem; }
+.sidebar-item { padding: 10px 0; border-bottom: 1px solid var(--rule-light); cursor: pointer; }
+.sidebar-item:hover .sidebar-title { color: var(--point); }
+.sidebar-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--rule); line-height: 1; }
+.sidebar-title { font-size: 13px; font-weight: 700; line-height: 1.4; margin: 4px 0 3px; transition: color 0.2s; }
+.sidebar-meta { font-size: 11px; color: var(--ink-faint); }
 
-    .link-card-icon { font-size: 24px; line-height: 1; }
-    .link-card-title { font-size: 14px; font-weight: 800; color: #1a1a1a; line-height: 1.4; padding-right: 24px; }
-    .link-card-desc { font-size: 12px; color: #888; line-height: 1.5; flex: 1; }
-    .link-card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
-    .link-card-cat { font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 4px; }
-    .cat-badge-aicc { background: #EBF4FF; color: #185FA5; }
-    .cat-badge-ai { background: #E1F5EE; color: #0F6E56; }
-    .cat-badge-gov { background: #FEF3E2; color: #993C1D; }
-    .cat-badge-other { background: #EEEDFE; color: #534AB7; }
-    .link-card-arrow { font-size: 14px; color: #ccc; }
+/* ── TERM CARDS ── */
+.term-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.term-card { background: var(--paper-dark); border: 1px solid var(--rule); padding: 10px 12px; cursor: pointer; transition: all 0.2s; }
+.term-card:hover { background: var(--paper); border-color: var(--ink); transform: translateY(-1px); }
+.term-name { font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 3px; }
+.term-desc { font-size: 11px; color: var(--ink-light); line-height: 1.45; }
 
-    /* 별표 */
-    .star-btn { position: absolute; top: 10px; right: 10px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 17px; color: #ccc; cursor: pointer; padding: 0; line-height: 1; transition: color 0.15s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
-    .star-btn:hover { color: #EF9F27; transform: scale(1.2); }
-    .star-btn.starred { color: #EF9F27; }
+/* ── DIVIDER ── */
+.col-rule { width: 100%; height: 1px; background: var(--rule); margin: 1.2rem 0; }
 
-    /* 스켈레톤 */
-    .skeleton { background: #e8eaed; border-radius: 4px; animation: pulse 1.2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .skel-card { background: #fff; border: 1px solid #e8eaed; border-radius: 12px; padding: 18px 16px; }
-    .skel-line { height: 12px; margin-bottom: 8px; border-radius: 4px; }
+/* ── 즐겨찾기 배너 ── */
+.fav-bar { background: var(--paper); border: 1px solid var(--rule); border-left: 3px solid #f0a500; padding: 10px 14px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+.fav-bar-left { font-size: 12px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.fav-bar-right { display: flex; align-items: center; gap: 8px; }
+.fav-count { font-size: 11px; color: var(--ink-faint); }
+.fav-clear-btn { font-size: 11px; color: var(--ink-faint); background: none; border: 1px solid var(--rule); padding: 3px 8px; cursor: pointer; font-family: 'Nanum Square', sans-serif; }
+.fav-clear-btn:hover { border-color: var(--ink); color: var(--ink); }
+.fav-empty-msg { text-align: center; padding: 3rem 1rem; color: var(--ink-faint); font-size: 13px; line-height: 1.8; }
+.fav-empty-icon { font-size: 2rem; margin-bottom: 8px; }
 
-    /* 즐겨찾기 탭 */
-    .fav-empty { text-align: center; padding: 52px 20px; }
-    .fav-empty-icon { font-size: 38px; color: #EF9F27; margin-bottom: 12px; }
-    .fav-empty-title { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
-    .fav-empty-desc { font-size: 13px; color: #888; line-height: 1.7; }
-    .fav-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .fav-count-lbl { font-size: 13px; font-weight: 800; color: #1a1a1a; }
-    .fav-clear-btn { font-size: 12px; color: #888; background: none; border: 1px solid #d0d5dd; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; }
+/* ── 즐겨찾기 뱃지 ── */
+.fav-nav-badge { display: inline-block; background: var(--point); color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; margin-left: 4px; min-width: 18px; text-align: center; }
+.fav-nav-badge.hidden { display: none; }
 
-    /* 핵심 용어 */
-    .terms-list { display: flex; flex-direction: column; gap: 8px; }
-    .term-item { background: #fff; border: 1px solid #e8eaed; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; transition: border-color 0.15s; cursor: pointer; }
-    .term-item:hover { border-color: #b0bec5; }
-    .term-icon { width: 32px; height: 32px; background: #EEEDFE; color: #534AB7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .term-main { flex: 1; }
-    .term-word { font-size: 13px; font-weight: 800; color: #1a1a1a; margin-bottom: 3px; }
-    .term-def { font-size: 12px; color: #666; line-height: 1.5; }
+/* ── MODAL ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(3px); }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--paper); max-width: 680px; width: 100%; max-height: 82vh; overflow-y: auto; border-top: 4px solid var(--point); padding: 2rem; position: relative; }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--paper-dark); border: 1px solid var(--rule); width: 32px; height: 32px; cursor: pointer; font-size: 18px; color: var(--ink); display: flex; align-items: center; justify-content: center; transition: background 0.2s; -webkit-appearance: none; appearance: none; outline: none; }
+.modal-close:hover { background: var(--point); color: #fff; border-color: var(--point); }
+.modal-cat { font-size: 11px; font-weight: 800; letter-spacing: 0.15em; color: var(--point); text-transform: uppercase; margin-bottom: 8px; }
+.modal-title { font-size: 1.35rem; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
+.modal-meta { font-size: 11px; color: var(--ink-faint); margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
+.modal-body { font-size: 14px; line-height: 1.88; color: var(--ink-mid); }
+.modal-body p { margin-bottom: 1rem; }
+.modal-body strong { color: var(--accent); font-weight: 800; }
+.modal-body .keyword-box { background: var(--paper-dark); border-left: 3px solid var(--point); padding: 10px 14px; margin: 1rem 0; font-size: 13px; line-height: 1.7; }
+.modal-source-link { display: inline-block; margin-top: 1.2rem; font-size: 12px; color: var(--blue); text-decoration: none; border-bottom: 1px solid #B5D4F4; padding-bottom: 2px; }
+.modal-source-link:hover { color: var(--point); border-color: var(--point); }
 
-    /* 모달 */
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-bg.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 14px; padding: 22px; max-width: 480px; width: 90%; max-height: 82vh; overflow-y: auto; position: relative; border: 1px solid #e8eaed; }
-    .modal-close { position: absolute; top: 14px; right: 14px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; cursor: pointer; color: #888; font-size: 20px; padding: 0; }
-    .modal-icon { font-size: 32px; margin-bottom: 10px; }
-    .modal-title { font-size: 16px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; line-height: 1.5; }
-    .modal-desc { font-size: 13px; color: #555; line-height: 1.8; margin-bottom: 14px; }
-    .modal-cat { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 14px; }
-    .modal-link-btn { width: 100%; background: #185FA5; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Nanum Square', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; transition: background 0.15s; }
-    .modal-link-btn:hover { background: #0C447C; }
+/* ── FOOTER ── */
+footer { background: var(--accent); color: #aaa; text-align: center; padding: 1.5rem 2rem; font-size: 12px; border-top: 3px solid var(--point); margin-top: 2rem; }
+footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+footer .footer-logo span { color: var(--point); }
 
-    .view-more-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid #d0d5dd; border-radius: 8px; color: #666; font-size: 12px; font-weight: 700; padding: 9px; cursor: pointer; font-family: 'Nanum Square', sans-serif; transition: background 0.15s; }
-    .view-more-btn:hover { background: #f4f5f7; }
+/* ── 별표 공통 ── */
+.star-btn { -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 15px; color: #ddd; cursor: pointer; padding: 0; line-height: 1; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
+.star-btn:hover { color: #f0a500; }
+.star-btn.starred { color: #f0a500; }
+.news-card-wrap { position: relative; }
+.news-card-star { position: absolute; top: 0; right: 0; }
 
-    /* DB 안내 배너 */
-    .db-info { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #166534; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .db-info-left { display: flex; align-items: center; gap: 8px; }
-    .db-edit-btn { font-size: 11px; font-weight: 700; color: #166534; background: none; border: 1px solid #BBF7D0; border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: 'Nanum Square', sans-serif; white-space: nowrap; text-decoration: none; }
-    .db-edit-btn:hover { background: #DCFCE7; }
-
-    @media (max-width: 560px) {
-      .cards-grid { grid-template-columns: repeat(2, 1fr); }
-      .stat-row { grid-template-columns: repeat(2,1fr); }
-      .nav-tab { font-size: 12px; padding: 9px 10px; }
-      .top-title { font-size: 15px; }
-    }
-  </style>
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .col-main { border-right: none; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+  .col-side { padding-left: 0; }
+  .hero-story { grid-template-columns: 1fr; }
+  .hero-article { grid-column: auto; }
+  .news-row { grid-template-columns: 1fr 1fr; }
+  .aicc-grid { grid-template-columns: 1fr; }
+  .nav-bar { flex-wrap: wrap; }
+}
+@media (max-width: 560px) {
+  .news-row { grid-template-columns: 1fr; }
+  .term-grid { grid-template-columns: 1fr; }
+  .aicc-grid { grid-template-columns: 1fr; }
+  .masthead-top { flex-direction: column; gap: 4px; font-size: 10px; }
+}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top-bar">
-    <div class="top-bar-left">
-      <span class="logo-badge">AI</span>
-      <div>
-        <div class="top-title">AI 데일리 인사이트</div>
-        <div class="top-sub">구글 시트 DB 연동 · 링크 허브 · 즐겨찾기</div>
-      </div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <div class="date-info">
+      <span id="today-date"></span>
+      <span id="edition-num">제1호</span>
+      <span>AI 산업 전문 미디어</span>
     </div>
-    <div class="top-right">
-      <div class="date-badge">
-        <i class="ti ti-calendar" style="font-size:13px;"></i>
-        <span id="today-date"></span>
-      </div>
-      <button class="refresh-btn" onclick="loadData()">
-        <i class="ti ti-refresh" style="font-size:13px;"></i> 새로고침
-      </button>
-    </div>
+    <div>AICC · AI뉴스 · 핵심용어 · 정부정책</div>
   </div>
-
-  <div class="nav-tabs">
-    <button class="nav-tab active" data-tab="all">전체보기</button>
-    <button class="nav-tab" data-tab="aicc">📞 AICC</button>
-    <button class="nav-tab" data-tab="ai">🤖 AI뉴스</button>
-    <button class="nav-tab" data-tab="gov">🏛️ 정부지원</button>
-    <button class="nav-tab" data-tab="other">📌 기타</button>
-    <button class="nav-tab" data-tab="terms">📖 핵심용어</button>
-    <button class="nav-tab" data-tab="favorites">★ 즐겨찾기<span class="fav-badge hidden" id="fav-badge">0</span></button>
+  <div class="masthead-main">
+    <div class="logo">AI <span>Daily</span> Insight</div>
+    <div class="tagline">인공지능 산업의 모든 흐름 — 한눈에</div>
   </div>
+  <nav class="nav-bar">
+    <a class="active" onclick="showSection('all',this)">전체</a>
+    <a onclick="showSection('aicc',this)">AICC 이슈</a>
+    <a onclick="showSection('ai-news',this)">AI 최신뉴스</a>
+    <a onclick="showSection('terms',this)">AI 핵심용어</a>
+    <a onclick="showSection('policy',this)">정부·정책</a>
+    <a onclick="showSection('favorites',this)">★ 즐겨찾기<span class="fav-nav-badge hidden" id="fav-badge">0</span></a>
+  </nav>
+</header>
 
-  <div class="main-content">
-    <div class="loading-banner" id="loading-banner">
-      <div class="spinner"></div>
-      <div class="loading-text">구글 시트에서 링크를 불러오는 중...</div>
-    </div>
-    <div class="error-banner" id="error-banner">
-      <span class="error-text">⚠ 데이터를 불러오지 못했습니다.</span>
-      <button class="retry-btn" onclick="loadData()">다시 시도</button>
-    </div>
-
-    <!-- 전체보기 -->
-    <div class="tab-panel active" id="tab-all">
-      <div class="db-info">
-        <div class="db-info-left">
-          <i class="ti ti-table" style="font-size:14px;"></i>
-          구글 시트에서 링크를 추가·수정하면 이 페이지에 자동 반영됩니다
-        </div>
-        <a class="db-edit-btn" href="https://docs.google.com/spreadsheets/d/1r0xCzSEb0CUoXFiL0rkwRRdVDFwq_ZriAUYnN3ADpkU/edit" target="_blank" rel="noopener">
-          <i class="ti ti-edit" style="font-size:11px;"></i> 시트 편집
-        </a>
-      </div>
-      <div class="stat-row">
-        <div class="stat-card"><div class="stat-num" style="color:#185FA5;" id="stat-total">—</div><div class="stat-lbl">전체 링크</div></div>
-        <div class="stat-card"><div class="stat-num" style="color:#1D9E75;" id="stat-aicc">—</div><div class="stat-lbl">AICC</div></div>
-        <div class="stat-card"><div class="stat-num" style="color:#7F77DD;" id="stat-ai">—</div><div class="stat-lbl">AI뉴스</div></div>
-        <div class="stat-card"><div class="stat-num" style="color:#D85A30;" id="stat-gov">—</div><div class="stat-lbl">정부지원</div></div>
-      </div>
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-headset"></i> AICC</div>
-        <div class="cards-grid" id="all-aicc-cards"></div>
-      </div>
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-robot"></i> AI뉴스</div>
-        <div class="cards-grid" id="all-ai-cards"></div>
-      </div>
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-building-community"></i> 정부지원</div>
-        <div class="cards-grid" id="all-gov-cards"></div>
-      </div>
-      <div class="section-block" id="all-other-section">
-        <div class="section-label"><i class="ti ti-bookmark"></i> 기타</div>
-        <div class="cards-grid" id="all-other-cards"></div>
-      </div>
-    </div>
-
-    <!-- AICC 탭 -->
-    <div class="tab-panel" id="tab-aicc">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-headset"></i> AICC 관련 사이트</div>
-        <div class="cards-grid" id="aicc-cards"></div>
-      </div>
-    </div>
-
-    <!-- AI뉴스 탭 -->
-    <div class="tab-panel" id="tab-ai">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-robot"></i> AI 뉴스 사이트</div>
-        <div class="cards-grid" id="ai-cards"></div>
-      </div>
-    </div>
-
-    <!-- 정부지원 탭 -->
-    <div class="tab-panel" id="tab-gov">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-building-community"></i> 정부지원 사이트</div>
-        <div class="cards-grid" id="gov-cards"></div>
-      </div>
-    </div>
-
-    <!-- 기타 탭 -->
-    <div class="tab-panel" id="tab-other">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-bookmark"></i> 기타 사이트</div>
-        <div class="cards-grid" id="other-cards"></div>
-      </div>
-    </div>
-
-    <!-- 핵심용어 탭 -->
-    <div class="tab-panel" id="tab-terms">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-book"></i> AI 핵심 용어 사전</div>
-        <div class="terms-list" id="terms-list"></div>
-      </div>
-    </div>
-
-    <!-- 즐겨찾기 탭 -->
-    <div class="tab-panel" id="tab-favorites">
-      <div id="fav-empty" class="fav-empty">
-        <div class="fav-empty-icon">☆</div>
-        <div class="fav-empty-title">아직 즐겨찾기가 없습니다</div>
-        <div class="fav-empty-desc">각 카드 우측 상단의 ☆ 버튼을 눌러<br>자주 쓰는 사이트를 모아보세요</div>
-      </div>
-      <div id="fav-content" style="display:none;">
-        <div class="fav-header">
-          <span class="fav-count-lbl" id="fav-count-lbl">저장된 항목 0개</span>
-          <button class="fav-clear-btn" onclick="clearAllFav()">전체 삭제</button>
-        </div>
-        <div class="cards-grid" id="fav-cards"></div>
-      </div>
-    </div>
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">속보</div>
+  <div class="ticker-track">
+    <span>KT cs, KSQI 우수콜센터 선정 — AI 보이스봇·챗봇 365일 24시간 운영으로 AICC 역량 입증</span>
+    <span>포레스터 "2030년까지 고객서비스 일자리 절반 AI로 대체" — 상담사는 AI 관리자로 진화</span>
+    <span>과기부, AI 컨택센터 보안 가이드라인 제정 시행 — 위반 시 매출 3% 과징금</span>
+    <span>EU AI Act 본격 시행 — 고위험 AI 투명성·감독 요건 의무화, 위반 시 매출 6% 과징금</span>
+    <span>국내 AI 스타트업 투자 전년 대비 2배 증가 — 생성형 AI 응용 분야 집중 투자</span>
+    <span>KT cs, KSQI 우수콜센터 선정 — AI 보이스봇·챗봇 365일 24시간 운영으로 AICC 역량 입증</span>
+    <span>포레스터 "2030년까지 고객서비스 일자리 절반 AI로 대체" — 상담사는 AI 관리자로 진화</span>
+    <span>과기부, AI 컨택센터 보안 가이드라인 제정 시행 — 위반 시 매출 3% 과징금</span>
+    <span>EU AI Act 본격 시행 — 고위험 AI 투명성·감독 요건 의무화, 위반 시 매출 6% 과징금</span>
+    <span>국내 AI 스타트업 투자 전년 대비 2배 증가 — 생성형 AI 응용 분야 집중 투자</span>
   </div>
 </div>
 
-<!-- 모달 -->
-<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+<!-- EDITION BAR -->
+<div class="edition-bar">
+  <span id="edition-label">2026년 6월 2주차 에디션 · 매주 업데이트</span>
+  <button class="update-btn" onclick="openModal('__guide__')">📋 업데이트 방법</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+  <div class="main-grid">
+
+    <!-- ── LEFT MAIN ── -->
+    <main class="col-main">
+
+      <!-- 전체 섹션 -->
+      <div id="sec-all">
+
+        <!-- AICC 이슈 -->
+        <div class="section-head">
+          <div class="section-badge">AICC</div>
+          <h2>AICC 이슈 — 산업동향 · 정부지원</h2>
+        </div>
+        <div class="aicc-grid" style="margin-bottom:1.8rem;">
+          <div class="aicc-card" onclick="openModal('aicc1')">
+            <button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc1')" aria-label="즐겨찾기">☆</button>
+            <div class="aicc-tag">도입사례 · 아이뉴스24 · 2026.06.09</div>
+            <div class="aicc-title">KT cs, KSQI 우수콜센터 선정 — AICC 역량 입증</div>
+            <div class="aicc-excerpt">AI 보이스봇·챗봇을 전면 도입해 365일 24시간 운영을 실현, AICC 경쟁력을 입증했다.</div>
+          </div>
+          <div class="aicc-card" onclick="openModal('aicc2')">
+            <button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc2')" aria-label="즐겨찾기">☆</button>
+            <div class="aicc-tag">글로벌 트렌드 · 포레스터 · 2026.06.09</div>
+            <div class="aicc-title">포레스터 "2030년까지 고객서비스 일자리 절반 사라진다"</div>
+            <div class="aicc-excerpt">상담사는 'AI 관리자'로 진화. 고객센터도 수익 창출 조직으로 변화하는 트렌드.</div>
+          </div>
+          <div class="aicc-card" onclick="openModal('aicc3')">
+            <button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc3')" aria-label="즐겨찾기">☆</button>
+            <div class="aicc-tag">산업동향 · 프라임경제 · 2026.06.09</div>
+            <div class="aicc-title">콜게이트, AI 커뮤니케이션 플랫폼 기업으로 전환</div>
+            <div class="aicc-excerpt">'보이는 ARS' 넘어 AI 풀스택 커뮤니케이션 플랫폼으로 체질 개선에 나선다.</div>
+          </div>
+          <div class="aicc-card" onclick="openModal('aicc4')">
+            <button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc4')" aria-label="즐겨찾기">☆</button>
+            <div class="aicc-tag">AI 용어 · 뉴스W · 2026.06.09</div>
+            <div class="aicc-title">AI에도 인간 개입이 필요한 이유 — HITL 개념 재조명</div>
+            <div class="aicc-excerpt">HITL(휴먼 인더 루프)은 AICC 품질 관리와 AI 재학습의 핵심 원리로 주목받고 있다.</div>
+          </div>
+        </div>
+
+        <!-- AI 최신 뉴스 -->
+        <div class="section-head">
+          <div class="section-badge blue">LIVE</div>
+          <h2>AI 최신 뉴스</h2>
+        </div>
+        <div class="hero-story" style="margin-bottom:1.5rem;">
+          <div class="hero-article news-card-wrap" onclick="openModal('news1')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news1')" aria-label="즐겨찾기">☆</button>
+            <div class="article-img"><div class="img-bg">🤖</div><div class="img-label">AI · 글로벌</div></div>
+            <div class="article-category">글로벌 · Bloomberg</div>
+            <div class="article-headline">GPT-5 출시 임박 — 멀티모달 능력 대폭 강화, 기업용 API 우선 공개</div>
+            <div class="article-deck">OpenAI가 GPT-5 출시를 공식화했다. 텍스트·이미지·음성·영상을 통합 처리하는 멀티모달 능력이 대폭 강화되며 추론 능력과 코딩 성능이 크게 향상될 것으로 예고됐다.</div>
+            <div class="article-byline">Bloomberg · 2026.06.09</div>
+          </div>
+          <div class="hero-article half news-card-wrap" onclick="openModal('news2')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news2')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">국내 · 연합뉴스</div>
+            <div class="article-headline">국내 AI 반도체 해외 수출 1억 달러 돌파</div>
+            <div class="article-deck">국내 AI 반도체 스타트업이 북미·유럽 빅테크에 NPU 칩 공급 계약을 체결하며 수출 1억 달러를 처음 돌파했다.</div>
+            <div class="article-byline">연합뉴스 · 2026.06.09</div>
+          </div>
+          <div class="hero-article half news-card-wrap" onclick="openModal('news3')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news3')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">정책 · 한국경제</div>
+            <div class="article-headline">EU AI Act 본격 시행 — 국내 기업 영향은?</div>
+            <div class="article-deck">유럽연합 AI 규제법이 본격 시행에 들어갔다. 고위험 AI에 투명성·감독 요건이 의무화되며 위반 시 매출 최대 6% 과징금이 부과된다.</div>
+            <div class="article-byline">한국경제 · 2026.06.09</div>
+          </div>
+        </div>
+        <div class="news-row" style="margin-bottom:1.8rem;">
+          <div class="news-card news-card-wrap" onclick="openModal('news4')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news4')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">연구 · MIT</div>
+            <div class="article-headline">AI 에이전트 시대 본격 개막 — 자율 업무 수행 AI 기업 현장 투입</div>
+            <div class="article-deck">단순 챗봇을 넘어 다단계 작업을 자율 수행하는 AI 에이전트가 기업 현장에 빠르게 확산되고 있다.</div>
+            <div class="article-byline">MIT Technology Review · 2026.06</div>
+          </div>
+          <div class="news-card news-card-wrap" onclick="openModal('news5')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news5')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">산업 · 전자신문</div>
+            <div class="article-headline">국내 AI 스타트업 투자 전년比 2배 — 생성형 AI 응용 집중</div>
+            <div class="article-deck">2026년 국내 AI 스타트업 투자 규모가 전년 대비 약 2배 증가한 것으로 나타났다.</div>
+            <div class="article-byline">전자신문 · 2026.06</div>
+          </div>
+          <div class="news-card news-card-wrap" onclick="openModal('news6')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news6')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">글로벌 · Wired</div>
+            <div class="article-headline">구글 Gemini 2.0, 기업용 AI 어시스턴트 시장 정면 도전</div>
+            <div class="article-deck">구글이 Gemini 2.0을 앞세워 기업용 AI 어시스턴트 시장에서 Microsoft와 OpenAI에 정면 도전장을 냈다.</div>
+            <div class="article-byline">Wired · 2026.06</div>
+          </div>
+        </div>
+
+        <!-- 정부·정책 -->
+        <div class="section-head">
+          <div class="section-badge dark">GOV</div>
+          <h2>정부·정책</h2>
+        </div>
+        <div class="news-row">
+          <div class="news-card news-card-wrap" onclick="openModal('gov1')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov1')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">과기부 · 공고</div>
+            <div class="article-headline">과기부 AICC 전문인력 양성사업 공모 — 총 50억 규모</div>
+            <div class="article-deck">컨소시엄 형태 지원 가능, 교육과정 설계·운영비·강사비 포함.</div>
+            <div class="article-byline">과기부 · 2026.06</div>
+          </div>
+          <div class="news-card news-card-wrap" onclick="openModal('gov2')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov2')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">중기부 · 바우처</div>
+            <div class="article-headline">중소기업 AI 도입 바우처 3,000만 원 지원</div>
+            <div class="article-deck">콜센터·CS 기업도 신청 가능. 지정 AI 공급사 목록에서 선택 도입.</div>
+            <div class="article-byline">중기부 · 2026.05</div>
+          </div>
+          <div class="news-card news-card-wrap" onclick="openModal('gov3')">
+            <button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov3')" aria-label="즐겨찾기">☆</button>
+            <div class="article-category">과기부 · 규제</div>
+            <div class="article-headline">AI 컨택센터 보안 가이드라인 제정 시행</div>
+            <div class="article-deck">상담 내용 AI 학습 활용 시 고객 사전 동의 의무화. 위반 시 매출 3% 과징금.</div>
+            <div class="article-byline">과기부 · 2026.05</div>
+          </div>
+        </div>
+
+      </div><!-- /sec-all -->
+
+      <!-- 개별 섹션들 (탭 전환 시 표시) -->
+      <div id="sec-aicc" style="display:none;">
+        <div class="section-head"><div class="section-badge">AICC</div><h2>AICC 이슈 전체</h2></div>
+        <div class="aicc-grid">
+          <div class="aicc-card" onclick="openModal('aicc1')"><button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc1')" aria-label="즐겨찾기">☆</button><div class="aicc-tag">도입사례 · 아이뉴스24</div><div class="aicc-title">KT cs, KSQI 우수콜센터 선정</div><div class="aicc-excerpt">AI 보이스봇·챗봇 전면 도입으로 AICC 경쟁력을 입증했다.</div></div>
+          <div class="aicc-card" onclick="openModal('aicc2')"><button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc2')" aria-label="즐겨찾기">☆</button><div class="aicc-tag">글로벌 트렌드 · 포레스터</div><div class="aicc-title">2030년까지 고객서비스 일자리 절반 사라진다</div><div class="aicc-excerpt">상담사는 AI 관리자로 진화하는 트렌드.</div></div>
+          <div class="aicc-card" onclick="openModal('aicc3')"><button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc3')" aria-label="즐겨찾기">☆</button><div class="aicc-tag">산업동향 · 프라임경제</div><div class="aicc-title">콜게이트, AI 커뮤니케이션 플랫폼으로 전환</div><div class="aicc-excerpt">보이는 ARS 넘어 AI 풀스택 기업으로.</div></div>
+          <div class="aicc-card" onclick="openModal('aicc4')"><button class="star-btn" onclick="event.stopPropagation();toggleFav(this,'aicc4')" aria-label="즐겨찾기">☆</button><div class="aicc-tag">AI 용어 · 뉴스W</div><div class="aicc-title">HITL(휴먼 인더 루프) 개념 재조명</div><div class="aicc-excerpt">AICC 품질 관리와 AI 재학습의 핵심 원리.</div></div>
+        </div>
+      </div>
+
+      <div id="sec-ai-news" style="display:none;">
+        <div class="section-head"><div class="section-badge blue">LIVE</div><h2>AI 최신 뉴스 전체</h2></div>
+        <div class="news-row" style="border:none;">
+          <div class="news-card news-card-wrap" onclick="openModal('news1')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news1')" aria-label="즐겨찾기">☆</button><div class="article-category">글로벌</div><div class="article-headline">GPT-5 출시 임박, 멀티모달 대폭 강화</div><div class="article-byline">Bloomberg · 2026.06.09</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('news2')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news2')" aria-label="즐겨찾기">☆</button><div class="article-category">국내</div><div class="article-headline">국내 AI 반도체 해외 수출 1억 달러 돌파</div><div class="article-byline">연합뉴스 · 2026.06.09</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('news3')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news3')" aria-label="즐겨찾기">☆</button><div class="article-category">정책</div><div class="article-headline">EU AI Act 본격 시행</div><div class="article-byline">한국경제 · 2026.06.09</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('news4')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news4')" aria-label="즐겨찾기">☆</button><div class="article-category">연구</div><div class="article-headline">AI 에이전트 시대 본격 개막</div><div class="article-byline">MIT Technology Review · 2026.06</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('news5')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news5')" aria-label="즐겨찾기">☆</button><div class="article-category">산업</div><div class="article-headline">국내 AI 스타트업 투자 전년比 2배</div><div class="article-byline">전자신문 · 2026.06</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('news6')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'news6')" aria-label="즐겨찾기">☆</button><div class="article-category">글로벌</div><div class="article-headline">구글 Gemini 2.0, 기업용 AI 어시스턴트 시장 도전</div><div class="article-byline">Wired · 2026.06</div></div>
+        </div>
+      </div>
+
+      <div id="sec-policy" style="display:none;">
+        <div class="section-head"><div class="section-badge dark">GOV</div><h2>정부·정책 전체</h2></div>
+        <div class="news-row" style="border:none;">
+          <div class="news-card news-card-wrap" onclick="openModal('gov1')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov1')" aria-label="즐겨찾기">☆</button><div class="article-category">과기부</div><div class="article-headline">AICC 전문인력 양성사업 공모 총 50억</div><div class="article-byline">과기부 · 2026.06</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('gov2')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov2')" aria-label="즐겨찾기">☆</button><div class="article-category">중기부</div><div class="article-headline">중소기업 AI 도입 바우처 3,000만 원</div><div class="article-byline">중기부 · 2026.05</div></div>
+          <div class="news-card news-card-wrap" onclick="openModal('gov3')"><button class="star-btn news-card-star" onclick="event.stopPropagation();toggleFav(this,'gov3')" aria-label="즐겨찾기">☆</button><div class="article-category">과기부</div><div class="article-headline">AI 컨택센터 보안 가이드라인 제정</div><div class="article-byline">과기부 · 2026.05</div></div>
+        </div>
+      </div>
+
+      <div id="sec-favorites" style="display:none;">
+        <div class="section-head"><div class="section-badge" style="background:#f0a500;">★</div><h2>즐겨찾기 모음</h2></div>
+        <div id="fav-empty-msg" class="fav-empty-msg"><div class="fav-empty-icon">☆</div>아직 즐겨찾기가 없습니다.<br>각 기사 우측 상단의 ☆ 버튼을 눌러 저장하세요.</div>
+        <div id="fav-list-wrap" style="display:none;">
+          <div class="fav-bar"><div class="fav-bar-left">★ 저장된 기사 <span id="fav-count" style="color:var(--point);font-weight:800;">0</span>개</div><div class="fav-bar-right"><button class="fav-clear-btn" onclick="clearAllFav()">전체 삭제</button></div></div>
+          <div id="fav-cards" class="news-row" style="border:none;"></div>
+        </div>
+      </div>
+
+    </main><!-- /col-main -->
+
+    <!-- ── RIGHT SIDEBAR ── -->
+    <aside class="col-side">
+
+      <!-- AI 핵심 용어 -->
+      <div class="sidebar-section" id="sec-terms-sidebar">
+        <div class="section-head"><div class="section-badge green">TERM</div><h2>AI 핵심 용어</h2></div>
+        <div class="term-grid">
+          <div class="term-card" onclick="openModal('term1')"><div class="term-name">RAG</div><div class="term-desc">외부 데이터 실시간 검색 후 답변 생성</div></div>
+          <div class="term-card" onclick="openModal('term2')"><div class="term-name">LLM</div><div class="term-desc">GPT·Claude 등 초거대 AI 기반 모델</div></div>
+          <div class="term-card" onclick="openModal('term3')"><div class="term-name">STT / TTS</div><div class="term-desc">말↔텍스트 양방향 변환 기술</div></div>
+          <div class="term-card" onclick="openModal('term4')"><div class="term-name">HITL</div><div class="term-desc">AI에 인간이 개입하는 학습 구조</div></div>
+          <div class="term-card" onclick="openModal('term5')"><div class="term-name">프롬프트 엔지니어링</div><div class="term-desc">AI 최적 답변 유도 입력 설계</div></div>
+          <div class="term-card" onclick="openModal('term6')"><div class="term-name">파인튜닝</div><div class="term-desc">범용 AI를 도메인 특화 추가 학습</div></div>
+          <div class="term-card" onclick="openModal('term7')"><div class="term-name">AI 에이전트</div><div class="term-desc">자율적으로 여러 작업 수행하는 AI</div></div>
+          <div class="term-card" onclick="openModal('term8')"><div class="term-name">할루시네이션</div><div class="term-desc">AI가 사실처럼 생성하는 오류 현상</div></div>
+        </div>
+      </div>
+
+      <div class="col-rule"></div>
+
+      <!-- 주목 기사 -->
+      <div class="sidebar-section">
+        <div class="section-head"><div class="section-badge blue">PICK</div><h2>이번 주 주목 기사</h2></div>
+        <div class="sidebar-item" onclick="openModal('aicc1')">
+          <div class="sidebar-num">01</div>
+          <div class="sidebar-title">KT cs, KSQI 우수콜센터 선정 — AICC 역량 입증</div>
+          <div class="sidebar-meta">아이뉴스24 · 2026.06.09</div>
+        </div>
+        <div class="sidebar-item" onclick="openModal('news1')">
+          <div class="sidebar-num">02</div>
+          <div class="sidebar-title">GPT-5 출시 임박 — 멀티모달 대폭 강화</div>
+          <div class="sidebar-meta">Bloomberg · 2026.06.09</div>
+        </div>
+        <div class="sidebar-item" onclick="openModal('aicc2')">
+          <div class="sidebar-num">03</div>
+          <div class="sidebar-title">포레스터 "2030년 고객서비스 일자리 절반 사라진다"</div>
+          <div class="sidebar-meta">포레스터 · 2026.06.09</div>
+        </div>
+        <div class="sidebar-item" onclick="openModal('gov1')">
+          <div class="sidebar-num">04</div>
+          <div class="sidebar-title">과기부 AICC 전문인력 양성사업 50억 공모</div>
+          <div class="sidebar-meta">과기부 · 2026.06</div>
+        </div>
+        <div class="sidebar-item" onclick="openModal('news3')">
+          <div class="sidebar-num">05</div>
+          <div class="sidebar-title">EU AI Act 본격 시행 — 국내 기업 영향</div>
+          <div class="sidebar-meta">한국경제 · 2026.06.09</div>
+        </div>
+      </div>
+
+    </aside>
+  </div><!-- /main-grid -->
+
+  <!-- 핵심 용어 탭 전용 섹션 -->
+  <div id="sec-terms" style="display:none; padding:1.5rem 0;">
+    <div class="section-head"><div class="section-badge green">TERM</div><h2>AI 핵심 용어 사전</h2></div>
+    <div class="term-grid" style="grid-template-columns: repeat(4,1fr); gap:10px;">
+      <div class="term-card" onclick="openModal('term1')"><div class="term-name">RAG — 검색증강생성</div><div class="term-desc">외부 데이터를 실시간 검색해 AI 답변을 보강하는 기술</div></div>
+      <div class="term-card" onclick="openModal('term2')"><div class="term-name">LLM — 대형 언어 모델</div><div class="term-desc">GPT·Claude 등 초거대 AI의 기반이 되는 언어 모델</div></div>
+      <div class="term-card" onclick="openModal('term3')"><div class="term-name">STT / TTS</div><div class="term-desc">말↔텍스트 양방향 변환 — AICC 자동응답의 기반 기술</div></div>
+      <div class="term-card" onclick="openModal('term4')"><div class="term-name">HITL — 휴먼 인더 루프</div><div class="term-desc">AI 시스템에 사람이 직접 개입해 신뢰도를 높이는 구조</div></div>
+      <div class="term-card" onclick="openModal('term5')"><div class="term-name">프롬프트 엔지니어링</div><div class="term-desc">AI에게 원하는 답변을 유도하는 입력 문장 설계 기술</div></div>
+      <div class="term-card" onclick="openModal('term6')"><div class="term-name">파인튜닝</div><div class="term-desc">범용 AI를 특정 도메인에 맞게 추가 학습시키는 기법</div></div>
+      <div class="term-card" onclick="openModal('term7')"><div class="term-name">AI 에이전트</div><div class="term-desc">스스로 판단하고 다단계 작업을 자율 수행하는 AI</div></div>
+      <div class="term-card" onclick="openModal('term8')"><div class="term-name">할루시네이션</div><div class="term-desc">AI가 사실이 아닌 내용을 그럴듯하게 생성하는 현상</div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="footer-logo">AI <span>Daily</span> Insight</div>
+  <p>매주 업데이트 · AICC · AI뉴스 · 핵심용어 · 정부정책</p>
+  <p style="margin-top:6px;font-size:11px;">콘텐츠 업데이트: Claude에게 "이번 주 뉴스로 업데이트해줘" 라고 요청하세요</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
-    <div class="modal-icon" id="m-icon"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-cat" id="m-cat"></div>
     <div class="modal-title" id="m-title"></div>
-    <div class="modal-desc" id="m-desc"></div>
-    <a class="modal-link-btn" id="m-link" href="#" target="_blank" rel="noopener">
-      <i class="ti ti-external-link" style="font-size:16px;"></i> 사이트 바로가기
-    </a>
+    <div class="modal-meta" id="m-meta"></div>
+    <div class="modal-body" id="m-body"></div>
   </div>
 </div>
 
 <script>
-/* 구글 시트 CSV URL */
-var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJei_UcOB48a_x3iD-gkI5IXKBuynCKfOl8LlkoQBE2XTqBnabQgXhtaJQrYguiVYlisLPXWypZIy/pub?gid=0&single=true&output=csv';
-
 /* 날짜 */
 (function(){
   var d = new Date(), days = ['일','월','화','수','목','금','토'];
   document.getElementById('today-date').textContent =
     d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')+' ('+days[d.getDay()]+')';
+  var weekNum = Math.ceil(d.getDate()/7);
+  document.getElementById('edition-label').textContent =
+    d.getFullYear()+'년 '+( d.getMonth()+1)+'월 '+weekNum+'주차 에디션 · 매주 업데이트';
 })();
 
-/* 탭 */
-document.querySelectorAll('.nav-tab').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    document.querySelectorAll('.nav-tab').forEach(function(b){ b.classList.remove('active'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
-  });
-});
-
 /* 즐겨찾기 */
-var favorites = JSON.parse(localStorage.getItem('ai_fav2') || '[]');
-function saveFav(){ localStorage.setItem('ai_fav2', JSON.stringify(favorites)); }
+var favorites = JSON.parse(localStorage.getItem('ai_daily_fav') || '[]');
+function saveFav(){ localStorage.setItem('ai_daily_fav', JSON.stringify(favorites)); }
 function updateFavBadge(){
   var b = document.getElementById('fav-badge');
   b.textContent = favorites.length;
   b.classList.toggle('hidden', favorites.length === 0);
+  var countEl = document.getElementById('fav-count');
+  if(countEl) countEl.textContent = favorites.length;
 }
-function renderFavTab(){
-  var empty = document.getElementById('fav-empty');
-  var content = document.getElementById('fav-content');
-  document.getElementById('fav-count-lbl').textContent = '저장된 항목 '+favorites.length+'개';
-  if(!favorites.length){ empty.style.display='block'; content.style.display='none'; return; }
-  empty.style.display='none'; content.style.display='block';
-  document.getElementById('fav-cards').innerHTML = favorites.map(function(f,i){
-    return makeCard(f, true, i);
-  }).join('');
+function toggleFav(btn, id){
+  var idx = favorites.indexOf(id);
+  if(idx === -1){
+    favorites.push(id);
+    btn.textContent = '★'; btn.classList.add('starred');
+    syncFavBtns(id, true);
+  } else {
+    favorites.splice(idx,1);
+    btn.textContent = '☆'; btn.classList.remove('starred');
+    syncFavBtns(id, false);
+  }
+  saveFav(); updateFavBadge(); renderFavSection();
 }
-function toggleFav(btn, item){
-  var idx = favorites.findIndex(function(f){ return f.title === item.title; });
-  if(idx === -1){ favorites.push(item); btn.textContent='★'; btn.classList.add('starred'); }
-  else { favorites.splice(idx,1); btn.textContent='☆'; btn.classList.remove('starred'); }
-  saveFav(); updateFavBadge(); renderFavTab();
-}
-function removeFavByTitle(title){
-  favorites = favorites.filter(function(f){ return f.title !== title; });
-  saveFav(); updateFavBadge(); renderFavTab();
+function syncFavBtns(id, starred){
+  document.querySelectorAll('[onclick*="toggleFav"][onclick*="\''+id+'\'"]').forEach(function(btn){
+    btn.textContent = starred ? '★' : '☆';
+    if(starred) btn.classList.add('starred'); else btn.classList.remove('starred');
+  });
 }
 function clearAllFav(){
   favorites = [];
-  document.querySelectorAll('.star-btn.starred').forEach(function(btn){ btn.textContent='☆'; btn.classList.remove('starred'); });
-  saveFav(); updateFavBadge(); renderFavTab();
+  document.querySelectorAll('.star-btn.starred').forEach(function(b){ b.textContent='☆'; b.classList.remove('starred'); });
+  saveFav(); updateFavBadge(); renderFavSection();
+}
+function renderFavSection(){
+  var empty = document.getElementById('fav-empty-msg');
+  var wrap = document.getElementById('fav-list-wrap');
+  if(!empty || !wrap) return;
+  if(!favorites.length){ empty.style.display='block'; wrap.style.display='none'; return; }
+  empty.style.display='none'; wrap.style.display='block';
+  var cards = document.getElementById('fav-cards');
+  cards.innerHTML = favorites.map(function(id){
+    var a = articles[id];
+    if(!a) return '';
+    return '<div class="news-card" onclick="openModal(\''+id+'\')" style="cursor:pointer;">' +
+      '<div class="article-category">'+a.cat+'</div>' +
+      '<div class="article-headline" style="font-size:13px;">'+a.title+'</div>' +
+      '<div class="article-byline">'+a.meta+'</div>' +
+    '</div>';
+  }).join('');
 }
 
-/* 카테고리 클래스 */
-function getCatClass(cat){
-  if(!cat) return 'other';
-  var c = cat.trim();
-  if(c === 'AICC') return 'aicc';
-  if(c === 'AI뉴스') return 'ai';
-  if(c === '정부지원') return 'gov';
-  return 'other';
-}
-function getCatBadgeClass(cat){
-  var c = getCatClass(cat);
-  return 'cat-badge-'+c;
+/* 탭 전환 */
+var allSections = ['all','aicc','ai-news','terms','policy','favorites'];
+function showSection(name, el){
+  document.querySelectorAll('.nav-bar a').forEach(function(a){ a.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  var mainGrid = document.querySelector('.main-grid');
+  var termsFullSec = document.getElementById('sec-terms');
+  if(name === 'terms'){
+    if(mainGrid) mainGrid.style.display = 'none';
+    if(termsFullSec) termsFullSec.style.display = 'block';
+    return;
+  }
+  if(mainGrid) mainGrid.style.display = 'grid';
+  if(termsFullSec) termsFullSec.style.display = 'none';
+  ['all','aicc','ai-news','policy','favorites'].forEach(function(s){
+    var el2 = document.getElementById('sec-'+s);
+    if(el2) el2.style.display = (s === name) ? 'block' : 'none';
+  });
+  if(name === 'favorites') renderFavSection();
 }
 
 /* 모달 */
-function openModal(item){
-  var catCls = getCatBadgeClass(item.cat);
-  document.getElementById('m-icon').textContent = item.icon || '🔗';
-  var catEl = document.getElementById('m-cat');
-  catEl.className = 'modal-cat '+catCls;
-  catEl.textContent = item.cat || '링크';
-  document.getElementById('m-title').textContent = item.title || '';
-  document.getElementById('m-desc').textContent = item.desc || '해당 사이트로 이동합니다.';
-  document.getElementById('m-link').href = item.url || '#';
-  document.getElementById('modal-bg').classList.add('show');
+function openModal(id){
+  var a = articles[id];
+  if(!a) return;
+  document.getElementById('m-cat').textContent = a.cat;
+  document.getElementById('m-title').textContent = a.title;
+  document.getElementById('m-meta').textContent = a.meta;
+  document.getElementById('m-body').innerHTML = a.body;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
+function closeModalOutside(e){ if(e.target.id === 'modal') closeModal(); }
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
 
-/* 카드 생성 */
-function makeCard(item, isFavTab, favIdx){
-  var catCls = getCatClass(item.cat);
-  var badgeCls = getCatBadgeClass(item.cat);
-  var isFav = favorites.some(function(f){ return f.title === item.title; });
-  var starCls = isFav ? 'starred' : '';
-  var starChar = isFav ? '★' : '☆';
-  var itemJson = encodeURIComponent(JSON.stringify(item));
-  return '<div class="link-card cat-'+catCls+'">' +
-    '<button class="star-btn '+starCls+'" onclick="handleStar(this,\''+itemJson+'\')" aria-label="즐겨찾기">'+starChar+'</button>' +
-    '<div class="link-card-icon">'+( item.icon || '🔗')+'</div>' +
-    '<div class="link-card-title" onclick="openModal(JSON.parse(decodeURIComponent(\''+itemJson+'\')))">'+item.title+'</div>' +
-    '<div class="link-card-desc">'+( item.desc || '')+'</div>' +
-    '<div class="link-card-meta">' +
-      '<span class="link-card-cat '+badgeCls+'">'+(item.cat||'기타')+'</span>' +
-      '<a href="'+(item.url||'#')+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#185FA5;font-size:18px;"><i class="ti ti-external-link"></i></a>' +
-    '</div>' +
-  '</div>';
-}
-
-function handleStar(btn, itemJson){
-  var item = JSON.parse(decodeURIComponent(itemJson));
-  toggleFav(btn, item);
-}
-
-/* 스켈레톤 */
-function showSkeleton(ids){
-  var s = '<div class="skel-card"><div class="skeleton skel-line" style="width:20%;height:20px;margin-bottom:10px;"></div><div class="skeleton skel-line" style="width:80%;"></div><div class="skeleton skel-line" style="width:60%;"></div></div>';
-  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=s+s+s; });
-}
-
-/* CSV 파싱 */
-function parseCSV(text){
-  var lines = text.trim().split('\n');
-  if(lines.length < 2) return [];
-  var headers = lines[0].split(',').map(function(h){ return h.trim().replace(/^"|"$/g,''); });
-  var results = [];
-  for(var i=1; i<lines.length; i++){
-    var cols = lines[i].match(/(".*?"|[^,]+)(?=,|$)/g) || lines[i].split(',');
-    if(!cols || !cols.length) continue;
-    var obj = {};
-    headers.forEach(function(h,j){
-      obj[h] = (cols[j]||'').trim().replace(/^"|"$/g,'');
-    });
-    if(obj['제목'] && obj['URL']) results.push({
-      title: obj['제목'] || '',
-      url:   obj['URL'] || '',
-      cat:   obj['카테고리'] || '기타',
-      desc:  obj['설명'] || '',
-      icon:  obj['아이콘'] || '🔗'
-    });
-  }
-  return results;
-}
-
-/* 렌더링 */
-function renderCards(id, items){
-  var el = document.getElementById(id);
-  if(!el) return;
-  if(!items||!items.length){ el.innerHTML='<p style="font-size:13px;color:#888;padding:8px 0;">등록된 링크가 없습니다.</p>'; return; }
-  el.innerHTML = items.map(function(i){ return makeCard(i,false,0); }).join('');
-}
-
-/* 데이터 로드 */
-async function loadData(){
-  var lb = document.getElementById('loading-banner');
-  var eb = document.getElementById('error-banner');
-  lb.classList.remove('hidden'); eb.classList.remove('show');
-  showSkeleton(['all-aicc-cards','all-ai-cards','all-gov-cards','all-other-cards']);
-
-  try {
-    var res = await fetch(SHEET_URL + '&cachebust=' + Date.now());
-    if(!res.ok) throw new Error('fetch 실패');
-    var text = await res.text();
-    var items = parseCSV(text);
-
-    var aicc  = items.filter(function(i){ return i.cat === 'AICC'; });
-    var ai    = items.filter(function(i){ return i.cat === 'AI뉴스'; });
-    var gov   = items.filter(function(i){ return i.cat === '정부지원'; });
-    var other = items.filter(function(i){ return i.cat !== 'AICC' && i.cat !== 'AI뉴스' && i.cat !== '정부지원'; });
-
-    /* 통계 */
-    document.getElementById('stat-total').textContent = items.length;
-    document.getElementById('stat-aicc').textContent = aicc.length;
-    document.getElementById('stat-ai').textContent = ai.length;
-    document.getElementById('stat-gov').textContent = gov.length;
-
-    /* 전체보기 */
-    renderCards('all-aicc-cards', aicc);
-    renderCards('all-ai-cards', ai);
-    renderCards('all-gov-cards', gov);
-    renderCards('all-other-cards', other);
-    var otherSec = document.getElementById('all-other-section');
-    if(otherSec) otherSec.style.display = other.length ? 'block' : 'none';
-
-    /* 각 탭 */
-    renderCards('aicc-cards', aicc);
-    renderCards('ai-cards', ai);
-    renderCards('gov-cards', gov);
-    renderCards('other-cards', other);
-
-    lb.classList.add('hidden');
-    renderFavTab();
-
-  } catch(err){
-    console.error(err);
-    lb.classList.add('hidden');
-    eb.classList.add('show');
-  }
-}
-
-/* 핵심 용어 */
-var TERMS = [
-  { word:'RAG — 검색증강생성', def:'외부 데이터를 실시간 검색해 AI 답변을 보강하는 기술', icon:'ti-search' },
-  { word:'LLM — 대형 언어 모델', def:'GPT·Claude 등 초거대 AI의 기반이 되는 언어 모델', icon:'ti-brain' },
-  { word:'STT / TTS — 음성인식·합성', def:'말과 텍스트를 양방향으로 변환하는 AICC 핵심 기술', icon:'ti-microphone' },
-  { word:'프롬프트 엔지니어링', def:'AI에게 원하는 답변을 유도하는 입력 설계 기술', icon:'ti-code' },
-  { word:'파인튜닝 (Fine-Tuning)', def:'범용 AI를 특정 도메인에 맞게 추가 학습시키는 기법', icon:'ti-adjustments' },
-  { word:'AI 에이전트 (Agent)', def:'스스로 판단하고 여러 작업을 자율 수행하는 AI', icon:'ti-robot' },
-  { word:'멀티모달 (Multimodal)', def:'텍스트·이미지·음성 등 여러 형태를 동시에 처리하는 AI', icon:'ti-photo' },
-  { word:'할루시네이션 (Hallucination)', def:'AI가 사실이 아닌 내용을 그럴듯하게 생성하는 현상', icon:'ti-alert-circle' }
-];
+/* 초기 즐겨찾기 상태 복원 */
 (function(){
-  var el = document.getElementById('terms-list');
-  el.innerHTML = TERMS.map(function(t){
-    return '<div class="term-item">' +
-      '<div class="term-icon"><i class="ti '+t.icon+'"></i></div>' +
-      '<div class="term-main"><div class="term-word">'+t.word+'</div><div class="term-def">'+t.def+'</div></div>' +
-    '</div>';
-  }).join('');
+  favorites.forEach(function(id){
+    document.querySelectorAll('[onclick*="toggleFav"][onclick*="\''+id+'\'"]').forEach(function(btn){
+      btn.textContent = '★'; btn.classList.add('starred');
+    });
+  });
+  updateFavBadge();
 })();
 
-/* 초기 실행 */
-updateFavBadge();
-loadData();
+/* 기사 데이터 */
+var articles = {
+  aicc1: {
+    cat: '도입사례 · 아이뉴스24',
+    title: 'KT cs, KSQI 우수콜센터 선정 — AI 보이스봇·챗봇 365일 24시간 운영으로 AICC 역량 입증',
+    meta: '아이뉴스24 · 2026년 6월 9일',
+    body: '<p>한국재정정보원 고객상담센터가 AI 보이스봇·챗봇을 전면 도입해 365일 24시간 운영을 실현하며 KT cs가 KSQI 우수콜센터로 선정됐습니다.</p><div class="keyword-box">💡 <strong>KSQI란?</strong><br>한국서비스품질지수(Korean Service Quality Index). 고객서비스 품질을 측정하는 국내 공인 지표로, 콜센터 업계에서 품질 인증의 기준이 됩니다.</div><p>AI 도입 이후 야간·주말 상담 처리율이 기존 대비 340% 향상됐으며, 상담사 1인당 처리 건수도 28% 증가했습니다. 특히 반복 문의의 72%를 AI가 자동 처리하면서 상담사는 복잡하고 고도화된 업무에 집중할 수 있게 됐습니다.</p><a href="https://www.inews24.com" class="modal-source-link" target="_blank">▶ 아이뉴스24 원문 기사 바로가기</a>'
+  },
+  aicc2: {
+    cat: '글로벌 트렌드 · 포레스터',
+    title: '포레스터 "2030년까지 고객서비스 일자리 절반 사라진다" — AI가 바꾸는 컨택센터의 미래',
+    meta: '매드클럽 · 2026년 6월 9일',
+    body: '<p>글로벌 리서치 기업 포레스터(Forrester)가 2030년까지 전 세계 고객서비스 일자리의 절반이 AI로 대체될 것이라고 전망했습니다.</p><p>그러나 단순한 일자리 감소가 아니라, 상담사 역할이 <strong>"응대자"에서 "AI 관리자·품질 감독자"로 진화</strong>할 것이라는 점이 핵심입니다. 고객센터 자체도 비용 센터에서 수익 창출 조직으로 변화하고 있습니다.</p><div class="keyword-box">💡 <strong>시사점</strong><br>AICC 도입이 단순한 인력 절감이 아니라 서비스 품질 고도화와 수익 창출로 이어진다는 점을 고객사에게 강조하는 것이 중요합니다.</div><a href="https://www.madclub.co.kr" class="modal-source-link" target="_blank">▶ 매드클럽 원문 기사 바로가기</a>'
+  },
+  aicc3: {
+    cat: '산업동향 · 프라임경제',
+    title: '콜게이트, 보이는 ARS 넘어 AI 커뮤니케이션 플랫폼 기업으로 전환 선언',
+    meta: '프라임경제 · 2026년 6월 9일',
+    body: '<p>국내 보이는 ARS 개발 선도 기업 콜게이트가 단순 컨택센터 솔루션을 넘어 <strong>AI 커뮤니케이션 플랫폼 기업</strong>으로 체질 개선을 공식 선언했습니다.</p><p>STT·NLU·TTS·감성분석을 통합한 AI 풀스택 플랫폼을 구축하고, 금융·통신·유통·공공 등 전 산업 분야를 대상으로 시장을 확대할 계획입니다.</p><div class="keyword-box">💡 <strong>경쟁 동향 분석</strong><br>콜게이트의 전환은 국내 AICC 시장 경쟁이 기존 대기업(삼성SDS, LG CNS)뿐 아니라 중견·전문 기업들로도 빠르게 확산되고 있음을 보여줍니다.</div><a href="https://www.newsprime.co.kr" class="modal-source-link" target="_blank">▶ 프라임경제 원문 기사 바로가기</a>'
+  },
+  aicc4: {
+    cat: 'AI 용어 해설 · 뉴스W',
+    title: "AI에도 인간 개입이 필요한 이유 — '휴먼 인더 루프(HITL)' 개념 재조명",
+    meta: '뉴스W · 2026년 6월 9일',
+    body: '<p><strong>HITL(Human-In-The-Loop, 휴먼 인더 루프)</strong>은 AI 시스템에 사람이 직접 개입하여 AI가 더 신뢰도 높은 결정을 내리도록 돕는 구조입니다.</p><div class="keyword-box">💡 <strong>AICC에서 HITL이 작동하는 방식</strong><br>① AI가 고객 문의 자동 처리<br>② AI 확신도 낮거나 민감한 케이스 → 인간 상담사 개입<br>③ 상담사가 올바른 답변 제공<br>④ 이 사례를 데이터로 AI 재학습<br>⑤ 다음번엔 AI가 혼자 처리 → <strong>데이터 플라이휠(선순환)</strong> 완성</div><a href="https://www.newsw.co.kr" class="modal-source-link" target="_blank">▶ 뉴스W 원문 기사 바로가기</a>'
+  },
+  news1: {
+    cat: '글로벌 AI · Bloomberg',
+    title: 'GPT-5 출시 임박 — 멀티모달 능력 대폭 강화, 기업용 API 우선 공개',
+    meta: 'Bloomberg · 2026년 6월 9일',
+    body: '<p>OpenAI가 GPT-5 출시를 공식화했습니다. 텍스트·이미지·음성·영상을 통합 처리하는 멀티모달 능력이 대폭 강화되며 추론 능력과 코딩 성능이 크게 향상될 것으로 예고됐습니다.</p><p>기업용 API 우선 공개 후 일반 출시 예정이며, AICC 분야에서도 멀티모달 상담(음성+화면 공유) 자동화에 큰 변화를 가져올 것으로 전망됩니다.</p><a href="https://www.bloomberg.com" class="modal-source-link" target="_blank">▶ Bloomberg 원문 기사 바로가기</a>'
+  },
+  news2: {
+    cat: '국내 AI · 연합뉴스',
+    title: '국내 AI 반도체 해외 수출 1억 달러 최초 돌파',
+    meta: '연합뉴스 · 2026년 6월 9일',
+    body: '<p>국내 AI 반도체 스타트업이 북미·유럽 빅테크 기업에 NPU 칩 공급 계약을 체결하며 해외 수출 1억 달러를 처음 돌파했습니다.</p><p>정부의 K-AI 반도체 수출 지원 정책과 맞물려 관련 산업 생태계 확장이 가속화되고 있습니다.</p><a href="https://www.yna.co.kr" class="modal-source-link" target="_blank">▶ 연합뉴스 원문 기사 바로가기</a>'
+  },
+  news3: {
+    cat: '정책 · 한국경제',
+    title: 'EU AI Act 본격 시행 — 국내 기업 영향은?',
+    meta: '한국경제 · 2026년 6월 9일',
+    body: '<p>유럽연합의 AI 규제법(EU AI Act)이 본격 시행에 들어갔습니다. 고위험 AI 시스템에는 반드시 인간 감독 체계와 투명성 요건이 적용되며, 위반 시 전 세계 매출의 최대 6%가 과징금으로 부과됩니다.</p><div class="keyword-box">💡 <strong>AICC 관련 영향</strong><br>고객 데이터를 처리하는 AICC 시스템은 고위험 AI로 분류될 수 있어, EU 시장 진출 시 투명성 요건과 인간 감독 체계 구축이 필수입니다.</div><a href="https://www.hankyung.com" class="modal-source-link" target="_blank">▶ 한국경제 원문 기사 바로가기</a>'
+  },
+  news4: {
+    cat: '연구 · MIT Technology Review',
+    title: 'AI 에이전트 시대 본격 개막 — 자율 업무 수행 AI 기업 현장 투입',
+    meta: 'MIT Technology Review · 2026년 6월',
+    body: '<p>2026년은 AI 에이전트가 실제 업무 환경에 본격 투입되는 원년으로 평가받고 있습니다. 단순 질의응답을 넘어 다단계 작업을 자율 수행하는 에이전트형 AI가 기업 현장에 빠르게 확산되고 있습니다.</p><a href="https://www.technologyreview.com" class="modal-source-link" target="_blank">▶ MIT Technology Review 바로가기</a>'
+  },
+  news5: {
+    cat: '산업 · 전자신문',
+    title: '국내 AI 스타트업 투자 전년比 2배 증가 — 생성형 AI 응용 분야 집중',
+    meta: '전자신문 · 2026년 6월',
+    body: '<p>2026년 국내 AI 스타트업에 대한 투자 규모가 전년 대비 약 2배 증가한 것으로 나타났습니다. 생성형 AI를 활용한 산업별 응용 솔루션 분야가 투자를 주도하고 있습니다.</p><a href="https://www.etnews.com" class="modal-source-link" target="_blank">▶ 전자신문 원문 기사 바로가기</a>'
+  },
+  news6: {
+    cat: '글로벌 · Wired',
+    title: '구글 Gemini 2.0, 기업용 AI 어시스턴트 시장 정면 도전',
+    meta: 'Wired · 2026년 6월',
+    body: '<p>구글이 Gemini 2.0을 앞세워 기업용 AI 어시스턴트 시장에서 Microsoft와 OpenAI에 정면 도전장을 냈습니다. 멀티모달 처리 능력과 Google Workspace 연동을 핵심 강점으로 내세우고 있습니다.</p><a href="https://www.wired.com" class="modal-source-link" target="_blank">▶ Wired 원문 기사 바로가기</a>'
+  },
+  gov1: {
+    cat: '정부지원 · 과기부',
+    title: '과기부 AICC 전문인력 양성사업 공모 — 총 50억 규모',
+    meta: '과학기술정보통신부 · 2026년 6월',
+    body: '<p>과학기술정보통신부가 2026년 하반기 AI 컨택센터 전문인력 양성 지원사업을 공모합니다. 지원 규모는 총 50억 원이며, 콜센터 운영 기업 및 AI 솔루션 제공사가 컨소시엄 형태로 지원 가능합니다.</p><div class="keyword-box">💡 <strong>지원 내용</strong><br>• 교육과정 설계·운영비 지원<br>• 강사비·실습장비비 포함<br>• 수료 후 취업 연계 프로그램 제공</div><a href="https://www.msit.go.kr" class="modal-source-link" target="_blank">▶ 과학기술정보통신부 공식 사이트</a>'
+  },
+  gov2: {
+    cat: '정부지원 · 중기부',
+    title: '중소기업 AI 도입 바우처 3,000만 원 지원',
+    meta: '중소벤처기업부 · 2026년 5월',
+    body: '<p>중소벤처기업부가 운영하는 AI 바우처 사업을 통해 중소 콜센터·고객지원 기업도 최대 3,000만 원 상당의 AI 솔루션 도입 지원을 받을 수 있습니다.</p><div class="keyword-box">💡 <strong>신청 방법</strong><br>• K-스타트업 포털(www.k-startup.go.kr) 신청<br>• 지정 AI 공급사 목록에서 솔루션 선택<br>• 자부담 30% 필요</div><a href="https://www.mss.go.kr" class="modal-source-link" target="_blank">▶ 중소벤처기업부 공식 사이트</a>'
+  },
+  gov3: {
+    cat: '규제·정책 · 과기부',
+    title: 'AI 컨택센터 보안 가이드라인 제정 시행',
+    meta: '과학기술정보통신부 · 2026년 5월',
+    body: '<p>과학기술정보통신부가 AI 컨택센터 운영 시 개인정보 보호와 보안을 위한 가이드라인을 제정·시행했습니다.</p><div class="keyword-box">💡 <strong>주요 규제 내용</strong><br>• 상담 내용의 AI 학습 활용 시 고객 사전 동의 의무화<br>• AI 생성 답변 오류·편향 여부 6개월 주기 감사<br>• 고객 음성 데이터 보관 기간·암호화 기준 명시<br>• 위반 시 매출액의 최대 3% 과징금</div><a href="https://www.msit.go.kr" class="modal-source-link" target="_blank">▶ 과학기술정보통신부 공식 사이트</a>'
+  },
+  term1: {
+    cat: 'AI 핵심 용어',
+    title: 'RAG — 검색증강생성 (Retrieval-Augmented Generation)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>RAG(Retrieval-Augmented Generation)</strong>는 대형 언어 모델(LLM)이 외부 지식 베이스를 실시간으로 검색하여 답변을 생성하는 기술입니다.</p><div class="keyword-box">💡 <strong>AICC 활용 예시</strong><br>• 상품 약관·FAQ를 실시간 검색해 정확한 안내 제공<br>• 사내 지식관리 시스템과 연동해 상담사 지원<br>• 최신 정책 변경사항을 즉시 반영한 자동응답</div>'
+  },
+  term2: {
+    cat: 'AI 핵심 용어',
+    title: 'LLM — 대형 언어 모델 (Large Language Model)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>LLM(Large Language Model)</strong>은 수백억 개 이상의 파라미터로 학습된 대규모 언어 모델입니다. GPT, Claude, Gemini, LLaMA 등이 대표적입니다.</p><div class="keyword-box">💡 <strong>AICC 활용 예시</strong><br>• 상담 스크립트 자동 생성<br>• 고객 의도 분류(Intent Classification)<br>• 감성 분석·요약 리포트 생성</div>'
+  },
+  term3: {
+    cat: 'AI 핵심 용어',
+    title: 'STT / TTS — 음성인식·음성합성',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>STT(Speech-To-Text)</strong>는 사람의 말을 텍스트로 변환하는 기술이고, <strong>TTS(Text-To-Speech)</strong>는 반대로 텍스트를 자연스러운 음성으로 변환합니다.</p><div class="keyword-box">💡 <strong>AICC 활용</strong><br>AICC에서 STT로 고객 발화를 실시간 텍스트화한 뒤 의도를 분석하고, TTS로 AI 상담사가 자연스럽게 응답하는 구조로 사용됩니다. 최근 감정·억양 표현이 가능한 고품질 TTS가 등장하고 있습니다.</div>'
+  },
+  term4: {
+    cat: 'AI 핵심 용어',
+    title: 'HITL — 휴먼 인더 루프 (Human-In-The-Loop)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>HITL(Human-In-The-Loop)</strong>은 AI 시스템에 사람이 직접 개입하여 AI가 더 신뢰도 높은 결정을 내리도록 돕는 구조입니다.</p><div class="keyword-box">💡 <strong>AICC 작동 방식</strong><br>① AI가 고객 문의 자동 처리 → ② 낮은 확신도/민감한 케이스 → 상담사 개입 → ③ 상담사 답변을 AI 재학습 데이터로 활용 → ④ 시간이 갈수록 AI 정확도 향상 (데이터 플라이휠)</div>'
+  },
+  term5: {
+    cat: 'AI 핵심 용어',
+    title: '프롬프트 엔지니어링 (Prompt Engineering)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>프롬프트 엔지니어링</strong>은 AI 모델에게 원하는 결과를 얻기 위해 입력 문장(프롬프트)을 체계적으로 설계하는 기술입니다.</p><div class="keyword-box">💡 <strong>AICC 활용</strong><br>• 상담 시나리오 자동 생성<br>• AI 응대 품질 향상<br>• 특정 답변 형식(친절체, 전문체) 유도</div>'
+  },
+  term6: {
+    cat: 'AI 핵심 용어',
+    title: '파인튜닝 (Fine-Tuning)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>파인튜닝</strong>은 사전 학습된 대형 모델을 특정 도메인의 데이터로 추가 학습시켜 해당 분야에 특화된 성능을 발휘하도록 만드는 기법입니다.</p><div class="keyword-box">💡 <strong>AICC 활용</strong><br>콜센터 도메인의 상담 데이터로 파인튜닝하면 업계 특화 용어와 응대 패턴에 훨씬 능숙한 AI를 만들 수 있습니다.</div>'
+  },
+  term7: {
+    cat: 'AI 핵심 용어',
+    title: 'AI 에이전트 (AI Agent)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>AI 에이전트</strong>는 단순 질의응답을 넘어 다단계 작업을 자율적으로 수행하는 AI입니다. 스스로 계획을 세우고, 도구를 사용하며, 목표를 달성합니다.</p><div class="keyword-box">💡 <strong>AICC 활용</strong><br>복잡한 민원 처리 자동화, 시스템 간 데이터 연동, 고객 맞춤형 해결책 제시 등에 활용됩니다.</div>'
+  },
+  term8: {
+    cat: 'AI 핵심 용어',
+    title: '할루시네이션 (Hallucination)',
+    meta: 'AI 핵심 용어집',
+    body: '<p><strong>할루시네이션(Hallucination)</strong>은 AI가 사실이 아닌 내용을 그럴듯하게 생성하는 현상입니다. AI가 학습 데이터에 없는 내용을 "지어내는" 것처럼 보이기 때문에 붙여진 이름입니다.</p><div class="keyword-box">💡 <strong>AICC에서 주의 사항</strong><br>고객 상담에서 AI가 잘못된 정보(약관, 가격, 정책)를 자신 있게 답변하는 할루시네이션은 치명적 문제가 될 수 있습니다. RAG와 HITL을 통해 할루시네이션을 최소화해야 합니다.</div>'
+  },
+  __guide__: {
+    cat: '편집팀 안내',
+    title: '📋 AI Daily Insight 주간 업데이트 방법',
+    meta: '매주 업데이트 가이드',
+    body: '<p>이 사이트는 HTML 단일 파일로 구성되어 있어 업데이트가 간단합니다.</p><div class="keyword-box">✅ <strong>추천 업데이트 루틴 (매주 10~20분)</strong><br>1. Claude.ai에서 "이번 주 AICC·AI 최신 뉴스로 업데이트해줘" 요청<br>2. Claude가 articles 객체를 새 내용으로 교체해줌<br>3. 수정된 HTML 파일을 GitHub에 업로드하면 자동 반영</div><p><strong>티커(속보 자막) 업데이트</strong><br>HTML에서 ticker-track 섹션의 &lt;span&gt; 텍스트를 교체하세요.</p><p><strong>에디션 번호 업데이트</strong><br>edition-num span의 숫자를 변경하세요. (예: 제2호, 제3호)</p>'
+  }
+};
 </script>
 </body>
 </html>
