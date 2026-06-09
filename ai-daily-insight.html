@@ -10,75 +10,81 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Nanum Square', sans-serif; background: #f4f5f7; color: #1a1a1a; min-height: 100vh; }
     .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+
     .top-bar { background: #fff; border-radius: 12px 12px 0 0; border-bottom: 1px solid #e8eaed; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; }
     .top-bar-left { display: flex; align-items: center; gap: 10px; }
     .logo-badge { background: #185FA5; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
     .top-title { font-size: 17px; font-weight: 800; color: #1a1a1a; }
     .top-sub { font-size: 12px; color: #888; margin-top: 1px; }
+    .top-right { display: flex; align-items: center; gap: 8px; }
     .date-badge { font-size: 12px; color: #666; background: #f4f5f7; border: 1px solid #e2e5ea; padding: 5px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; }
+    .refresh-btn { font-size: 12px; font-weight: 700; color: #185FA5; background: none; border: 1px solid #B5D4F4; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; display: flex; align-items: center; gap: 4px; }
+    .refresh-btn:hover { background: #EBF4FF; }
+
     .nav-tabs { display: flex; background: #f8f9fb; border-bottom: 1px solid #e8eaed; padding: 0 22px; overflow-x: auto; }
     .nav-tab { font-size: 13px; font-weight: 700; color: #888; padding: 11px 16px; cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; font-family: 'Nanum Square', sans-serif; transition: color 0.15s; }
     .nav-tab:hover { color: #1a1a1a; }
     .nav-tab.active { color: #185FA5; border-bottom: 2px solid #185FA5; }
     .fav-badge { display: inline-block; background: #185FA5; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 10px; margin-left: 4px; min-width: 18px; text-align: center; }
     .fav-badge.hidden { display: none; }
+
     .main-content { background: #fff; border-radius: 0 0 12px 12px; padding: 18px 22px; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
     .loading-banner { background: #EBF4FF; border: 1px solid #B5D4F4; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
     .loading-banner.hidden { display: none; }
     .spinner { width: 18px; height: 18px; border: 2px solid #B5D4F4; border-top-color: #185FA5; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-text { font-size: 13px; color: #185FA5; font-weight: 700; }
-    .loading-step { font-size: 11px; color: #378ADD; margin-top: 2px; }
+
     .error-banner { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between; gap: 10px; }
     .error-banner.show { display: flex; }
     .error-text { font-size: 12px; color: #B91C1C; font-weight: 700; }
     .retry-btn { font-size: 12px; font-weight: 700; color: #B91C1C; background: none; border: 1px solid #FECACA; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; }
+
     .section-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
     .section-label::after { content: ''; flex: 1; height: 1px; background: #e8eaed; }
-    .section-block { margin-bottom: 22px; }
-    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 14px; }
+    .section-block { margin-bottom: 24px; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 16px; }
     .stat-card { background: #f8f9fb; border-radius: 8px; padding: 12px 14px; text-align: center; }
     .stat-num { font-size: 22px; font-weight: 800; }
     .stat-lbl { font-size: 11px; color: #888; margin-top: 2px; font-weight: 700; }
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 10px; }
-    .news-card { background: #fff; border: 1px solid #e8eaed; border-radius: 10px; padding: 14px 16px; position: relative; transition: border-color 0.15s, box-shadow 0.15s; }
-    .news-card:hover { border-color: #b0bec5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .news-card.aicc { border-left: 3px solid #185FA5; }
-    .news-card.ai-news { border-left: 3px solid #1D9E75; }
-    .star-btn { position: absolute; top: 10px; right: 10px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 17px; color: #ccc; cursor: pointer; padding: 0; margin: 0; line-height: 1; transition: color 0.15s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
+
+    /* 링크 카드 그리드 */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+
+    .link-card { background: #fff; border: 1px solid #e8eaed; border-radius: 12px; padding: 18px 16px; position: relative; transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s; text-decoration: none; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+    .link-card:hover { border-color: #185FA5; box-shadow: 0 4px 16px rgba(24,95,165,0.10); transform: translateY(-2px); }
+    .link-card.cat-aicc { border-left: 3px solid #185FA5; }
+    .link-card.cat-ai { border-left: 3px solid #1D9E75; }
+    .link-card.cat-gov { border-left: 3px solid #D85A30; }
+    .link-card.cat-other { border-left: 3px solid #7F77DD; }
+
+    .link-card-icon { font-size: 24px; line-height: 1; }
+    .link-card-title { font-size: 14px; font-weight: 800; color: #1a1a1a; line-height: 1.4; padding-right: 24px; }
+    .link-card-desc { font-size: 12px; color: #888; line-height: 1.5; flex: 1; }
+    .link-card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .link-card-cat { font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 4px; }
+    .cat-badge-aicc { background: #EBF4FF; color: #185FA5; }
+    .cat-badge-ai { background: #E1F5EE; color: #0F6E56; }
+    .cat-badge-gov { background: #FEF3E2; color: #993C1D; }
+    .cat-badge-other { background: #EEEDFE; color: #534AB7; }
+    .link-card-arrow { font-size: 14px; color: #ccc; }
+
+    /* 별표 */
+    .star-btn { position: absolute; top: 10px; right: 10px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 17px; color: #ccc; cursor: pointer; padding: 0; line-height: 1; transition: color 0.15s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
     .star-btn:hover { color: #EF9F27; transform: scale(1.2); }
     .star-btn.starred { color: #EF9F27; }
-    .card-tag-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; padding-right: 24px; }
-    .card-tag { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; }
-    .tag-aicc { background: #EBF4FF; color: #185FA5; }
-    .tag-ai { background: #E1F5EE; color: #0F6E56; }
-    .tag-term { background: #EEEDFE; color: #534AB7; }
-    .card-new-badge { font-size: 10px; font-weight: 800; background: #EBF4FF; color: #185FA5; padding: 2px 6px; border-radius: 3px; }
-    .card-title { font-size: 13px; font-weight: 800; color: #1a1a1a; line-height: 1.5; margin-bottom: 6px; padding-right: 22px; text-decoration: none; display: block; }
-    .card-title:hover { color: #185FA5; }
-    .card-desc { font-size: 12px; color: #666; line-height: 1.6; }
-    .card-meta { margin-top: 10px; font-size: 11px; color: #999; display: flex; align-items: center; justify-content: space-between; }
-    .card-link { font-size: 11px; color: #185FA5; text-decoration: none; display: flex; align-items: center; gap: 3px; }
-    .card-link:hover { text-decoration: underline; }
-    .terms-list { display: flex; flex-direction: column; gap: 8px; }
-    .term-item { background: #fff; border: 1px solid #e8eaed; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; transition: border-color 0.15s; }
-    .term-item:hover { border-color: #b0bec5; }
-    .term-icon { width: 32px; height: 32px; background: #EEEDFE; color: #534AB7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .term-main { flex: 1; min-width: 0; cursor: pointer; }
-    .term-word { font-size: 13px; font-weight: 800; color: #1a1a1a; margin-bottom: 3px; }
-    .term-def { font-size: 12px; color: #666; line-height: 1.5; }
-    .term-star { -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; font-size: 17px; color: #ccc; cursor: pointer; padding: 0; flex-shrink: 0; transition: color 0.15s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
-    .term-star:hover { color: #EF9F27; transform: scale(1.2); }
-    .term-star.starred { color: #EF9F27; }
+
+    /* 스켈레톤 */
     .skeleton { background: #e8eaed; border-radius: 4px; animation: pulse 1.2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .skel-card { background: #fff; border: 1px solid #e8eaed; border-radius: 10px; padding: 14px 16px; }
+    .skel-card { background: #fff; border: 1px solid #e8eaed; border-radius: 12px; padding: 18px 16px; }
     .skel-line { height: 12px; margin-bottom: 8px; border-radius: 4px; }
-    .view-more-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid #d0d5dd; border-radius: 8px; color: #666; font-size: 12px; font-weight: 700; padding: 9px; cursor: pointer; font-family: 'Nanum Square', sans-serif; transition: background 0.15s; }
-    .view-more-btn:hover { background: #f4f5f7; }
-    .rss-info { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #166534; display: flex; align-items: center; gap: 8px; }
+
+    /* 즐겨찾기 탭 */
     .fav-empty { text-align: center; padding: 52px 20px; }
     .fav-empty-icon { font-size: 38px; color: #EF9F27; margin-bottom: 12px; }
     .fav-empty-title { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
@@ -86,28 +92,43 @@
     .fav-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .fav-count-lbl { font-size: 13px; font-weight: 800; color: #1a1a1a; }
     .fav-clear-btn { font-size: 12px; color: #888; background: none; border: 1px solid #d0d5dd; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'Nanum Square', sans-serif; }
-    .fav-list { display: flex; flex-direction: column; gap: 8px; }
-    .fav-item { background: #fff; border: 1px solid #e8eaed; border-radius: 10px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; }
-    .fav-item-body { flex: 1; min-width: 0; }
-    .fav-item-tag { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 7px; }
-    .fav-item-title { font-size: 13px; font-weight: 800; margin-bottom: 5px; }
-    .fav-item-title a { color: #1a1a1a; text-decoration: none; }
-    .fav-item-title a:hover { color: #185FA5; text-decoration: underline; }
-    .fav-item-desc { font-size: 12px; color: #666; line-height: 1.5; }
-    .fav-item-meta { margin-top: 6px; font-size: 11px; color: #999; }
-    .fav-remove-btn { -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; color: #EF9F27; font-size: 18px; cursor: pointer; padding: 0; flex-shrink: 0; transition: transform 0.1s; }
-    .fav-remove-btn:hover { transform: scale(1.2); }
+
+    /* 핵심 용어 */
+    .terms-list { display: flex; flex-direction: column; gap: 8px; }
+    .term-item { background: #fff; border: 1px solid #e8eaed; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; transition: border-color 0.15s; cursor: pointer; }
+    .term-item:hover { border-color: #b0bec5; }
+    .term-icon { width: 32px; height: 32px; background: #EEEDFE; color: #534AB7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .term-main { flex: 1; }
+    .term-word { font-size: 13px; font-weight: 800; color: #1a1a1a; margin-bottom: 3px; }
+    .term-def { font-size: 12px; color: #666; line-height: 1.5; }
+
+    /* 모달 */
     .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
     .modal-bg.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 14px; padding: 22px; max-width: 500px; width: 90%; max-height: 82vh; overflow-y: auto; position: relative; border: 1px solid #e8eaed; }
+    .modal-box { background: #fff; border-radius: 14px; padding: 22px; max-width: 480px; width: 90%; max-height: 82vh; overflow-y: auto; position: relative; border: 1px solid #e8eaed; }
     .modal-close { position: absolute; top: 14px; right: 14px; -webkit-appearance: none; appearance: none; background: transparent !important; border: none !important; outline: none !important; cursor: pointer; color: #888; font-size: 20px; padding: 0; }
-    .modal-tag-el { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
-    .modal-title { font-size: 16px; font-weight: 800; color: #1a1a1a; margin-bottom: 10px; line-height: 1.5; }
-    .modal-body-text { font-size: 13px; color: #555; line-height: 1.85; }
-    .modal-source { margin-top: 14px; font-size: 11px; color: #999; }
-    .modal-link-btn { margin-top: 12px; width: 100%; background: #185FA5; color: #fff; border: none; border-radius: 8px; padding: 11px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nanum Square', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+    .modal-icon { font-size: 32px; margin-bottom: 10px; }
+    .modal-title { font-size: 16px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; line-height: 1.5; }
+    .modal-desc { font-size: 13px; color: #555; line-height: 1.8; margin-bottom: 14px; }
+    .modal-cat { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 14px; }
+    .modal-link-btn { width: 100%; background: #185FA5; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Nanum Square', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; transition: background 0.15s; }
     .modal-link-btn:hover { background: #0C447C; }
-    @media (max-width: 560px) { .cards-grid { grid-template-columns: 1fr; } .stat-row { grid-template-columns: repeat(2,1fr); } .nav-tab { font-size: 12px; padding: 9px 10px; } }
+
+    .view-more-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid #d0d5dd; border-radius: 8px; color: #666; font-size: 12px; font-weight: 700; padding: 9px; cursor: pointer; font-family: 'Nanum Square', sans-serif; transition: background 0.15s; }
+    .view-more-btn:hover { background: #f4f5f7; }
+
+    /* DB 안내 배너 */
+    .db-info { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #166534; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .db-info-left { display: flex; align-items: center; gap: 8px; }
+    .db-edit-btn { font-size: 11px; font-weight: 700; color: #166534; background: none; border: 1px solid #BBF7D0; border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: 'Nanum Square', sans-serif; white-space: nowrap; text-decoration: none; }
+    .db-edit-btn:hover { background: #DCFCE7; }
+
+    @media (max-width: 560px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-row { grid-template-columns: repeat(2,1fr); }
+      .nav-tab { font-size: 12px; padding: 9px 10px; }
+      .top-title { font-size: 15px; }
+    }
   </style>
 </head>
 <body>
@@ -117,120 +138,156 @@
       <span class="logo-badge">AI</span>
       <div>
         <div class="top-title">AI 데일리 인사이트</div>
-        <div class="top-sub">Google News RSS 실시간 연동 · 매일 자동 업데이트 · 무료</div>
+        <div class="top-sub">구글 시트 DB 연동 · 링크 허브 · 즐겨찾기</div>
       </div>
     </div>
-    <div class="date-badge">
-      <i class="ti ti-calendar" style="font-size:13px;"></i>
-      <span id="today-date"></span>
+    <div class="top-right">
+      <div class="date-badge">
+        <i class="ti ti-calendar" style="font-size:13px;"></i>
+        <span id="today-date"></span>
+      </div>
+      <button class="refresh-btn" onclick="loadData()">
+        <i class="ti ti-refresh" style="font-size:13px;"></i> 새로고침
+      </button>
     </div>
   </div>
 
   <div class="nav-tabs">
     <button class="nav-tab active" data-tab="all">전체보기</button>
-    <button class="nav-tab" data-tab="aicc">📞 AICC 이슈</button>
-    <button class="nav-tab" data-tab="news">🤖 AI 뉴스</button>
-    <button class="nav-tab" data-tab="terms">📖 핵심 용어</button>
+    <button class="nav-tab" data-tab="aicc">📞 AICC</button>
+    <button class="nav-tab" data-tab="ai">🤖 AI뉴스</button>
+    <button class="nav-tab" data-tab="gov">🏛️ 정부지원</button>
+    <button class="nav-tab" data-tab="other">📌 기타</button>
+    <button class="nav-tab" data-tab="terms">📖 핵심용어</button>
     <button class="nav-tab" data-tab="favorites">★ 즐겨찾기<span class="fav-badge hidden" id="fav-badge">0</span></button>
   </div>
 
   <div class="main-content">
     <div class="loading-banner" id="loading-banner">
       <div class="spinner"></div>
-      <div>
-        <div class="loading-text">최신 뉴스를 불러오는 중입니다...</div>
-        <div class="loading-step" id="loading-step">Google News RSS 연결 중</div>
-      </div>
+      <div class="loading-text">구글 시트에서 링크를 불러오는 중...</div>
     </div>
     <div class="error-banner" id="error-banner">
-      <span class="error-text" id="error-text">뉴스를 불러오지 못했습니다.</span>
-      <button class="retry-btn" onclick="loadAllRSS()">다시 시도</button>
+      <span class="error-text">⚠ 데이터를 불러오지 못했습니다.</span>
+      <button class="retry-btn" onclick="loadData()">다시 시도</button>
     </div>
 
+    <!-- 전체보기 -->
     <div class="tab-panel active" id="tab-all">
-      <div class="section-block">
-        <div class="section-label"><i class="ti ti-headset"></i> AICC 이슈</div>
-        <div class="stat-row">
-          <div class="stat-card"><div class="stat-num" style="color:#185FA5;" id="stat-aicc">—</div><div class="stat-lbl">AICC 뉴스</div></div>
-          <div class="stat-card"><div class="stat-num" style="color:#1D9E75;" id="stat-ai">—</div><div class="stat-lbl">AI 뉴스</div></div>
-          <div class="stat-card"><div class="stat-num" style="color:#7F77DD;" id="stat-today">—</div><div class="stat-lbl">오늘 업데이트</div></div>
-          <div class="stat-card"><div class="stat-num" style="color:#D85A30;" id="stat-total">—</div><div class="stat-lbl">전체 기사</div></div>
+      <div class="db-info">
+        <div class="db-info-left">
+          <i class="ti ti-table" style="font-size:14px;"></i>
+          구글 시트에서 링크를 추가·수정하면 이 페이지에 자동 반영됩니다
         </div>
+        <a class="db-edit-btn" href="https://docs.google.com/spreadsheets/d/1r0xCzSEb0CUoXFiL0rkwRRdVDFwq_ZriAUYnN3ADpkU/edit" target="_blank" rel="noopener">
+          <i class="ti ti-edit" style="font-size:11px;"></i> 시트 편집
+        </a>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-num" style="color:#185FA5;" id="stat-total">—</div><div class="stat-lbl">전체 링크</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#1D9E75;" id="stat-aicc">—</div><div class="stat-lbl">AICC</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#7F77DD;" id="stat-ai">—</div><div class="stat-lbl">AI뉴스</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#D85A30;" id="stat-gov">—</div><div class="stat-lbl">정부지원</div></div>
+      </div>
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-headset"></i> AICC</div>
         <div class="cards-grid" id="all-aicc-cards"></div>
-        <button class="view-more-btn" onclick="switchTab('aicc')">AICC 뉴스 전체보기 ↗</button>
       </div>
       <div class="section-block">
-        <div class="section-label"><i class="ti ti-robot"></i> AI 최신 뉴스</div>
-        <div class="cards-grid" id="all-news-cards"></div>
-        <button class="view-more-btn" onclick="switchTab('news')">AI 뉴스 전체보기 ↗</button>
+        <div class="section-label"><i class="ti ti-robot"></i> AI뉴스</div>
+        <div class="cards-grid" id="all-ai-cards"></div>
       </div>
       <div class="section-block">
-        <div class="section-label"><i class="ti ti-book"></i> AI 핵심 용어</div>
-        <div class="terms-list" id="all-terms-list"></div>
+        <div class="section-label"><i class="ti ti-building-community"></i> 정부지원</div>
+        <div class="cards-grid" id="all-gov-cards"></div>
+      </div>
+      <div class="section-block" id="all-other-section">
+        <div class="section-label"><i class="ti ti-bookmark"></i> 기타</div>
+        <div class="cards-grid" id="all-other-cards"></div>
       </div>
     </div>
 
+    <!-- AICC 탭 -->
     <div class="tab-panel" id="tab-aicc">
       <div class="section-block">
-        <div class="section-label"><i class="ti ti-headset"></i> AICC 전체 뉴스</div>
-        <div class="rss-info"><i class="ti ti-rss" style="font-size:14px;"></i> Google News RSS 실시간 연동 — 제목 클릭 시 원문 기사로 이동합니다</div>
-        <div class="cards-grid" id="aicc-cards-full"></div>
+        <div class="section-label"><i class="ti ti-headset"></i> AICC 관련 사이트</div>
+        <div class="cards-grid" id="aicc-cards"></div>
       </div>
     </div>
 
-    <div class="tab-panel" id="tab-news">
+    <!-- AI뉴스 탭 -->
+    <div class="tab-panel" id="tab-ai">
       <div class="section-block">
-        <div class="section-label"><i class="ti ti-robot"></i> AI 전체 뉴스</div>
-        <div class="rss-info"><i class="ti ti-rss" style="font-size:14px;"></i> Google News RSS 실시간 연동 — 제목 클릭 시 원문 기사로 이동합니다</div>
-        <div class="cards-grid" id="news-cards-full"></div>
+        <div class="section-label"><i class="ti ti-robot"></i> AI 뉴스 사이트</div>
+        <div class="cards-grid" id="ai-cards"></div>
       </div>
     </div>
 
+    <!-- 정부지원 탭 -->
+    <div class="tab-panel" id="tab-gov">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-building-community"></i> 정부지원 사이트</div>
+        <div class="cards-grid" id="gov-cards"></div>
+      </div>
+    </div>
+
+    <!-- 기타 탭 -->
+    <div class="tab-panel" id="tab-other">
+      <div class="section-block">
+        <div class="section-label"><i class="ti ti-bookmark"></i> 기타 사이트</div>
+        <div class="cards-grid" id="other-cards"></div>
+      </div>
+    </div>
+
+    <!-- 핵심용어 탭 -->
     <div class="tab-panel" id="tab-terms">
       <div class="section-block">
         <div class="section-label"><i class="ti ti-book"></i> AI 핵심 용어 사전</div>
-        <div class="terms-list" id="terms-list-full"></div>
+        <div class="terms-list" id="terms-list"></div>
       </div>
     </div>
 
+    <!-- 즐겨찾기 탭 -->
     <div class="tab-panel" id="tab-favorites">
       <div id="fav-empty" class="fav-empty">
         <div class="fav-empty-icon">☆</div>
         <div class="fav-empty-title">아직 즐겨찾기가 없습니다</div>
-        <div class="fav-empty-desc">각 카드 우측 상단의 ☆ 버튼을 눌러<br>중요한 기사를 모아보세요</div>
+        <div class="fav-empty-desc">각 카드 우측 상단의 ☆ 버튼을 눌러<br>자주 쓰는 사이트를 모아보세요</div>
       </div>
       <div id="fav-content" style="display:none;">
         <div class="fav-header">
           <span class="fav-count-lbl" id="fav-count-lbl">저장된 항목 0개</span>
           <button class="fav-clear-btn" onclick="clearAllFav()">전체 삭제</button>
         </div>
-        <div class="fav-list" id="fav-list"></div>
+        <div class="cards-grid" id="fav-cards"></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- 모달 -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
-    <span class="modal-tag-el" id="m-tag"></span>
+    <div class="modal-icon" id="m-icon"></div>
+    <div class="modal-cat" id="m-cat"></div>
     <div class="modal-title" id="m-title"></div>
-    <div class="modal-body-text" id="m-body"></div>
-    <div class="modal-source" id="m-source"></div>
+    <div class="modal-desc" id="m-desc"></div>
     <a class="modal-link-btn" id="m-link" href="#" target="_blank" rel="noopener">
-      <i class="ti ti-external-link" style="font-size:15px;"></i> 원문 기사 보러가기
+      <i class="ti ti-external-link" style="font-size:16px;"></i> 사이트 바로가기
     </a>
   </div>
 </div>
 
 <script>
+/* 구글 시트 CSV URL */
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJei_UcOB48a_x3iD-gkI5IXKBuynCKfOl8LlkoQBE2XTqBnabQgXhtaJQrYguiVYlisLPXWypZIy/pub?gid=0&single=true&output=csv';
+
 /* 날짜 */
 (function(){
-  var d = new Date();
-  var days = ['일','월','화','수','목','금','토'];
+  var d = new Date(), days = ['일','월','화','수','목','금','토'];
   document.getElementById('today-date').textContent =
-    d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' +
-    String(d.getDate()).padStart(2,'0') + ' (' + days[d.getDay()] + ')';
+    d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')+' ('+days[d.getDay()]+')';
 })();
 
 /* 탭 */
@@ -239,19 +296,13 @@ document.querySelectorAll('.nav-tab').forEach(function(btn){
     document.querySelectorAll('.nav-tab').forEach(function(b){ b.classList.remove('active'); });
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
     btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
   });
 });
-function switchTab(name){
-  document.querySelectorAll('.nav-tab').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelector('[data-tab="' + name + '"]').classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-}
 
 /* 즐겨찾기 */
-var favorites = JSON.parse(localStorage.getItem('ai_fav') || '[]');
-function saveFav(){ localStorage.setItem('ai_fav', JSON.stringify(favorites)); }
+var favorites = JSON.parse(localStorage.getItem('ai_fav2') || '[]');
+function saveFav(){ localStorage.setItem('ai_fav2', JSON.stringify(favorites)); }
 function updateFavBadge(){
   var b = document.getElementById('fav-badge');
   b.textContent = favorites.length;
@@ -260,38 +311,21 @@ function updateFavBadge(){
 function renderFavTab(){
   var empty = document.getElementById('fav-empty');
   var content = document.getElementById('fav-content');
-  var list = document.getElementById('fav-list');
-  document.getElementById('fav-count-lbl').textContent = '저장된 항목 ' + favorites.length + '개';
+  document.getElementById('fav-count-lbl').textContent = '저장된 항목 '+favorites.length+'개';
   if(!favorites.length){ empty.style.display='block'; content.style.display='none'; return; }
   empty.style.display='none'; content.style.display='block';
-  var tagCls = { aicc:'tag-aicc', ai:'tag-ai', term:'tag-term' };
-  list.innerHTML = favorites.map(function(f, i){
-    return '<div class="fav-item">' +
-      '<div class="fav-item-body">' +
-        '<span class="fav-item-tag ' + (tagCls[f.type]||'tag-ai') + '">' + f.tag + '</span>' +
-        '<div class="fav-item-title"><a href="' + (f.link||'#') + '" target="_blank" rel="noopener">' + f.title + '</a></div>' +
-        '<div class="fav-item-meta">' + (f.source||'') + ' ' + (f.date||'') + '</div>' +
-      '</div>' +
-      '<button class="fav-remove-btn" onclick="removeFav(' + i + ')">★</button>' +
-    '</div>';
+  document.getElementById('fav-cards').innerHTML = favorites.map(function(f,i){
+    return makeCard(f, true, i);
   }).join('');
 }
-function toggleFav(btn, type, title, link, source, date, tag){
-  var idx = favorites.findIndex(function(f){ return f.title === title; });
-  if(idx === -1){
-    favorites.push({ type:type, title:title, link:link, source:source, date:date, tag:tag });
-    btn.textContent = '★'; btn.classList.add('starred');
-  } else {
-    favorites.splice(idx, 1);
-    btn.textContent = '☆'; btn.classList.remove('starred');
-  }
+function toggleFav(btn, item){
+  var idx = favorites.findIndex(function(f){ return f.title === item.title; });
+  if(idx === -1){ favorites.push(item); btn.textContent='★'; btn.classList.add('starred'); }
+  else { favorites.splice(idx,1); btn.textContent='☆'; btn.classList.remove('starred'); }
   saveFav(); updateFavBadge(); renderFavTab();
 }
-function removeFav(idx){
-  var removed = favorites[idx]; favorites.splice(idx, 1);
-  document.querySelectorAll('.star-btn.starred').forEach(function(btn){
-    if(btn.dataset.title === removed.title){ btn.textContent='☆'; btn.classList.remove('starred'); }
-  });
+function removeFavByTitle(title){
+  favorites = favorites.filter(function(f){ return f.title !== title; });
   saveFav(); updateFavBadge(); renderFavTab();
 }
 function clearAllFav(){
@@ -300,183 +334,137 @@ function clearAllFav(){
   saveFav(); updateFavBadge(); renderFavTab();
 }
 
+/* 카테고리 클래스 */
+function getCatClass(cat){
+  if(!cat) return 'other';
+  var c = cat.trim();
+  if(c === 'AICC') return 'aicc';
+  if(c === 'AI뉴스') return 'ai';
+  if(c === '정부지원') return 'gov';
+  return 'other';
+}
+function getCatBadgeClass(cat){
+  var c = getCatClass(cat);
+  return 'cat-badge-'+c;
+}
+
 /* 모달 */
-function openModal(title, body, link, source, type, tag){
-  var tagCls = { aicc:'tag-aicc', ai:'tag-ai', term:'tag-term' };
-  var tagEl = document.getElementById('m-tag');
-  tagEl.className = 'modal-tag-el ' + (tagCls[type]||'tag-ai');
-  tagEl.textContent = tag || '뉴스';
-  document.getElementById('m-title').textContent = title;
-  document.getElementById('m-body').textContent = body || '원문 기사를 확인해 주세요.';
-  document.getElementById('m-source').textContent = '출처: ' + (source||'');
-  var linkEl = document.getElementById('m-link');
-  if(link){ linkEl.href = link; linkEl.style.display='flex'; }
-  else { linkEl.style.display='none'; }
+function openModal(item){
+  var catCls = getCatBadgeClass(item.cat);
+  document.getElementById('m-icon').textContent = item.icon || '🔗';
+  var catEl = document.getElementById('m-cat');
+  catEl.className = 'modal-cat '+catCls;
+  catEl.textContent = item.cat || '링크';
+  document.getElementById('m-title').textContent = item.title || '';
+  document.getElementById('m-desc').textContent = item.desc || '해당 사이트로 이동합니다.';
+  document.getElementById('m-link').href = item.url || '#';
   document.getElementById('modal-bg').classList.add('show');
 }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); }
 
-/* 날짜 포맷 */
-function formatDate(str){
-  try {
-    var d = new Date(str);
-    if(isNaN(d.getTime())) return str || '';
-    return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
-  } catch(e){ return str || ''; }
-}
-function isToday(str){
-  try {
-    var d = new Date(str), now = new Date();
-    return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate();
-  } catch(e){ return false; }
-}
-
 /* 카드 생성 */
-function makeCard(item, type){
-  var tagCls = { aicc:'tag-aicc', ai:'tag-ai' };
-  var borderCls = { aicc:'aicc', ai:'ai-news' };
+function makeCard(item, isFavTab, favIdx){
+  var catCls = getCatClass(item.cat);
+  var badgeCls = getCatBadgeClass(item.cat);
   var isFav = favorites.some(function(f){ return f.title === item.title; });
-  var tag = type === 'aicc' ? 'AICC' : 'AI뉴스';
-  var title = item.title || '';
-  var desc = item.desc || '';
-  var link = item.link || '#';
-  var source = item.source || '';
-  var dt = formatDate(item.date);
-  var todayBadge = isToday(item.date) ? '<span class="card-new-badge">TODAY</span>' : '';
-  var starred = isFav ? 'starred' : '';
+  var starCls = isFav ? 'starred' : '';
   var starChar = isFav ? '★' : '☆';
-  var safeTitle = title.replace(/\\/g,'\\\\').replace(/'/g,'&#39;');
-  var safeLink = link.replace(/'/g,'&#39;');
-  var safeSrc = source.replace(/'/g,'&#39;');
-  return '<div class="news-card ' + (borderCls[type]||'') + '">' +
-    '<button class="star-btn ' + starred + '" data-title="' + safeTitle + '" aria-label="즐겨찾기" ' +
-      'onclick="toggleFav(this,\'' + type + '\',this.dataset.title,\'' + safeLink + '\',\'' + safeSrc + '\',\'' + dt + '\',\'' + tag + '\')">' + starChar + '</button>' +
-    '<div class="card-tag-row"><span class="card-tag ' + (tagCls[type]||'tag-ai') + '">' + tag + '</span>' + todayBadge + '</div>' +
-    '<a class="card-title" href="' + link + '" target="_blank" rel="noopener">' + title + '</a>' +
-    '<div class="card-desc">' + desc + '</div>' +
-    '<div class="card-meta">' +
-      '<span>' + source + ' · ' + dt + '</span>' +
-      '<a class="card-link" href="' + link + '" target="_blank" rel="noopener">원문 <i class="ti ti-external-link" style="font-size:11px;"></i></a>' +
+  var itemJson = encodeURIComponent(JSON.stringify(item));
+  return '<div class="link-card cat-'+catCls+'">' +
+    '<button class="star-btn '+starCls+'" onclick="handleStar(this,\''+itemJson+'\')" aria-label="즐겨찾기">'+starChar+'</button>' +
+    '<div class="link-card-icon">'+( item.icon || '🔗')+'</div>' +
+    '<div class="link-card-title" onclick="openModal(JSON.parse(decodeURIComponent(\''+itemJson+'\')))">'+item.title+'</div>' +
+    '<div class="link-card-desc">'+( item.desc || '')+'</div>' +
+    '<div class="link-card-meta">' +
+      '<span class="link-card-cat '+badgeCls+'">'+(item.cat||'기타')+'</span>' +
+      '<a href="'+(item.url||'#')+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#185FA5;font-size:18px;"><i class="ti ti-external-link"></i></a>' +
     '</div>' +
   '</div>';
 }
 
+function handleStar(btn, itemJson){
+  var item = JSON.parse(decodeURIComponent(itemJson));
+  toggleFav(btn, item);
+}
+
 /* 스켈레톤 */
-function showSkeleton(id){
-  var s = '<div class="skel-card"><div class="skeleton skel-line" style="width:30%;"></div><div class="skeleton skel-line" style="width:90%;"></div><div class="skeleton skel-line" style="width:70%;"></div></div>';
-  document.getElementById(id).innerHTML = s + s + s;
+function showSkeleton(ids){
+  var s = '<div class="skel-card"><div class="skeleton skel-line" style="width:20%;height:20px;margin-bottom:10px;"></div><div class="skeleton skel-line" style="width:80%;"></div><div class="skeleton skel-line" style="width:60%;"></div></div>';
+  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=s+s+s; });
 }
-function renderCards(id, items, type){
+
+/* CSV 파싱 */
+function parseCSV(text){
+  var lines = text.trim().split('\n');
+  if(lines.length < 2) return [];
+  var headers = lines[0].split(',').map(function(h){ return h.trim().replace(/^"|"$/g,''); });
+  var results = [];
+  for(var i=1; i<lines.length; i++){
+    var cols = lines[i].match(/(".*?"|[^,]+)(?=,|$)/g) || lines[i].split(',');
+    if(!cols || !cols.length) continue;
+    var obj = {};
+    headers.forEach(function(h,j){
+      obj[h] = (cols[j]||'').trim().replace(/^"|"$/g,'');
+    });
+    if(obj['제목'] && obj['URL']) results.push({
+      title: obj['제목'] || '',
+      url:   obj['URL'] || '',
+      cat:   obj['카테고리'] || '기타',
+      desc:  obj['설명'] || '',
+      icon:  obj['아이콘'] || '🔗'
+    });
+  }
+  return results;
+}
+
+/* 렌더링 */
+function renderCards(id, items){
   var el = document.getElementById(id);
-  if(!items || !items.length){ el.innerHTML = '<p style="font-size:13px;color:#888;padding:12px 0;">불러온 기사가 없습니다.</p>'; return; }
-  el.innerHTML = items.map(function(i){ return makeCard(i, type); }).join('');
+  if(!el) return;
+  if(!items||!items.length){ el.innerHTML='<p style="font-size:13px;color:#888;padding:8px 0;">등록된 링크가 없습니다.</p>'; return; }
+  el.innerHTML = items.map(function(i){ return makeCard(i,false,0); }).join('');
 }
 
-/* 핵심 용어 */
-var TERMS = [
-  { word:'RAG — 검색증강생성', def:'외부 데이터를 실시간 검색해 AI 답변을 보강하는 기술', body:'LLM이 외부 지식 베이스를 실시간으로 검색하여 답변을 생성하는 기술입니다. AICC FAQ 자동응답에 활용됩니다.', icon:'ti-search' },
-  { word:'LLM — 대형 언어 모델', def:'GPT·Claude 등 초거대 AI의 기반이 되는 언어 모델', body:'수백억 개 이상의 파라미터로 학습된 대규모 언어 모델입니다. AICC의 핵심 엔진입니다.', icon:'ti-brain' },
-  { word:'STT / TTS — 음성인식·합성', def:'말과 텍스트를 양방향으로 변환하는 AICC 핵심 기술', body:'STT는 고객 발화를 텍스트로, TTS는 텍스트를 음성으로 변환합니다. AICC 자동응답의 기반입니다.', icon:'ti-microphone' },
-  { word:'프롬프트 엔지니어링', def:'AI에게 원하는 답변을 유도하는 입력 설계 기술', body:'AI 모델에게 원하는 결과를 얻기 위해 입력 문장을 체계적으로 설계하는 기술입니다.', icon:'ti-code' },
-  { word:'파인튜닝 (Fine-Tuning)', def:'범용 AI를 특정 도메인에 맞게 추가 학습시키는 기법', body:'사전 학습된 모델을 콜센터 도메인 데이터로 추가 학습해 특화 성능을 발휘하게 합니다.', icon:'ti-adjustments' },
-  { word:'AI 에이전트 (Agent)', def:'스스로 판단하고 여러 작업을 자율 수행하는 AI', body:'단순 질의응답을 넘어 다단계 작업을 자율적으로 수행하는 AI입니다. 복잡한 민원 자동화에 활용됩니다.', icon:'ti-robot' }
-];
-function renderTerms(id, items){
-  var el = document.getElementById(id);
-  el.innerHTML = items.map(function(t){
-    var w = t.word.replace(/'/g,'&#39;');
-    var b = t.body.replace(/'/g,'&#39;');
-    var df = t.def.replace(/'/g,'&#39;');
-    return '<div class="term-item">' +
-      '<div class="term-icon"><i class="ti ' + (t.icon||'ti-book') + '"></i></div>' +
-      '<div class="term-main" onclick="openModal(\'' + w + '\',\'' + b + '\',\'\',\'AI 핵심 용어집\',\'term\',\'핵심용어\')">' +
-        '<div class="term-word">' + t.word + '</div>' +
-        '<div class="term-def">' + t.def + '</div>' +
-      '</div>' +
-      '<button class="term-star" onclick="toggleFav(this,\'term\',\'' + w + '\',\'\',\'AI 핵심 용어집\',\'\',\'핵심용어\')">☆</button>' +
-    '</div>';
-  }).join('');
-}
-
-/* RSS 피드 — Google News (외부 접근 허용) */
-var RSS_FEEDS = {
-  aicc: [
-    'https://news.google.com/rss/search?q=AICC+AI+콜센터&hl=ko&gl=KR&ceid=KR:ko',
-    'https://news.google.com/rss/search?q=AI+컨택센터+콜센터&hl=ko&gl=KR&ceid=KR:ko'
-  ],
-  news: [
-    'https://news.google.com/rss/search?q=인공지능+AI&hl=ko&gl=KR&ceid=KR:ko',
-    'https://news.google.com/rss/search?q=생성형AI+챗GPT&hl=ko&gl=KR&ceid=KR:ko',
-    'https://news.google.com/rss/search?q=AI+정책+규제+한국&hl=ko&gl=KR&ceid=KR:ko'
-  ]
-};
-
-/* RSS 프록시 fetch */
-async function fetchRSS(url){
-  var proxy = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url) + '&count=10';
-  var res = await fetch(proxy);
-  if(!res.ok) throw new Error('fetch 실패');
-  var data = await res.json();
-  if(data.status !== 'ok') throw new Error('RSS 파싱 실패');
-  return data.items.map(function(item){
-    var desc = (item.description || item.content || '').replace(/<[^>]*>/g,'').trim().slice(0,120);
-    return {
-      title: item.title || '',
-      link: item.link || item.guid || '#',
-      desc: desc,
-      source: item.author || (data.feed && data.feed.title) || 'Google News',
-      date: item.pubDate || ''
-    };
-  });
-}
-
-/* 메인 로드 */
-async function loadAllRSS(){
+/* 데이터 로드 */
+async function loadData(){
   var lb = document.getElementById('loading-banner');
   var eb = document.getElementById('error-banner');
-  var step = document.getElementById('loading-step');
   lb.classList.remove('hidden'); eb.classList.remove('show');
-  ['all-aicc-cards','all-news-cards','aicc-cards-full','news-cards-full'].forEach(showSkeleton);
-
-  var allAicc = [];
-  var allNews = [];
+  showSkeleton(['all-aicc-cards','all-ai-cards','all-gov-cards','all-other-cards']);
 
   try {
-    step.textContent = 'AICC 뉴스 불러오는 중...';
-    for(var i=0; i<RSS_FEEDS.aicc.length; i++){
-      try {
-        var items = await fetchRSS(RSS_FEEDS.aicc[i]);
-        allAicc = allAicc.concat(items);
-      } catch(e){ console.warn('AICC RSS 실패', i); }
-    }
-    allAicc = allAicc.filter(function(v,i,a){
-      return a.findIndex(function(t){ return t.title===v.title; }) === i;
-    }).slice(0,12);
+    var res = await fetch(SHEET_URL + '&cachebust=' + Date.now());
+    if(!res.ok) throw new Error('fetch 실패');
+    var text = await res.text();
+    var items = parseCSV(text);
 
-    step.textContent = 'AI 뉴스 불러오는 중...';
-    for(var j=0; j<RSS_FEEDS.news.length; j++){
-      try {
-        var items2 = await fetchRSS(RSS_FEEDS.news[j]);
-        allNews = allNews.concat(items2);
-      } catch(e){ console.warn('AI RSS 실패', j); }
-    }
-    allNews = allNews.filter(function(v,i,a){
-      return a.findIndex(function(t){ return t.title===v.title; }) === i;
-    }).slice(0,12);
+    var aicc  = items.filter(function(i){ return i.cat === 'AICC'; });
+    var ai    = items.filter(function(i){ return i.cat === 'AI뉴스'; });
+    var gov   = items.filter(function(i){ return i.cat === '정부지원'; });
+    var other = items.filter(function(i){ return i.cat !== 'AICC' && i.cat !== 'AI뉴스' && i.cat !== '정부지원'; });
 
-    var todayCnt = allAicc.concat(allNews).filter(function(i){ return isToday(i.date); }).length;
-    document.getElementById('stat-aicc').textContent = allAicc.length;
-    document.getElementById('stat-ai').textContent = allNews.length;
-    document.getElementById('stat-today').textContent = todayCnt;
-    document.getElementById('stat-total').textContent = allAicc.length + allNews.length;
+    /* 통계 */
+    document.getElementById('stat-total').textContent = items.length;
+    document.getElementById('stat-aicc').textContent = aicc.length;
+    document.getElementById('stat-ai').textContent = ai.length;
+    document.getElementById('stat-gov').textContent = gov.length;
 
-    renderCards('all-aicc-cards', allAicc.slice(0,3), 'aicc');
-    renderCards('all-news-cards', allNews.slice(0,3), 'ai');
-    renderCards('aicc-cards-full', allAicc, 'aicc');
-    renderCards('news-cards-full', allNews, 'ai');
-    renderTerms('all-terms-list', TERMS.slice(0,3));
-    renderTerms('terms-list-full', TERMS);
+    /* 전체보기 */
+    renderCards('all-aicc-cards', aicc);
+    renderCards('all-ai-cards', ai);
+    renderCards('all-gov-cards', gov);
+    renderCards('all-other-cards', other);
+    var otherSec = document.getElementById('all-other-section');
+    if(otherSec) otherSec.style.display = other.length ? 'block' : 'none';
+
+    /* 각 탭 */
+    renderCards('aicc-cards', aicc);
+    renderCards('ai-cards', ai);
+    renderCards('gov-cards', gov);
+    renderCards('other-cards', other);
+
     lb.classList.add('hidden');
+    renderFavTab();
 
   } catch(err){
     console.error(err);
@@ -485,9 +473,30 @@ async function loadAllRSS(){
   }
 }
 
+/* 핵심 용어 */
+var TERMS = [
+  { word:'RAG — 검색증강생성', def:'외부 데이터를 실시간 검색해 AI 답변을 보강하는 기술', icon:'ti-search' },
+  { word:'LLM — 대형 언어 모델', def:'GPT·Claude 등 초거대 AI의 기반이 되는 언어 모델', icon:'ti-brain' },
+  { word:'STT / TTS — 음성인식·합성', def:'말과 텍스트를 양방향으로 변환하는 AICC 핵심 기술', icon:'ti-microphone' },
+  { word:'프롬프트 엔지니어링', def:'AI에게 원하는 답변을 유도하는 입력 설계 기술', icon:'ti-code' },
+  { word:'파인튜닝 (Fine-Tuning)', def:'범용 AI를 특정 도메인에 맞게 추가 학습시키는 기법', icon:'ti-adjustments' },
+  { word:'AI 에이전트 (Agent)', def:'스스로 판단하고 여러 작업을 자율 수행하는 AI', icon:'ti-robot' },
+  { word:'멀티모달 (Multimodal)', def:'텍스트·이미지·음성 등 여러 형태를 동시에 처리하는 AI', icon:'ti-photo' },
+  { word:'할루시네이션 (Hallucination)', def:'AI가 사실이 아닌 내용을 그럴듯하게 생성하는 현상', icon:'ti-alert-circle' }
+];
+(function(){
+  var el = document.getElementById('terms-list');
+  el.innerHTML = TERMS.map(function(t){
+    return '<div class="term-item">' +
+      '<div class="term-icon"><i class="ti '+t.icon+'"></i></div>' +
+      '<div class="term-main"><div class="term-word">'+t.word+'</div><div class="term-def">'+t.def+'</div></div>' +
+    '</div>';
+  }).join('');
+})();
+
+/* 초기 실행 */
 updateFavBadge();
-renderFavTab();
-loadAllRSS();
+loadData();
 </script>
 </body>
 </html>
